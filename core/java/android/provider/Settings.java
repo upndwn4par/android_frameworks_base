@@ -2515,7 +2515,19 @@ public final class Settings {
         public static final String SIP_ALWAYS = "SIP_ALWAYS";
 
         /**
+<<<<<<< HEAD
          * One of the sip call options: Only if destination is a SIP address.
+=======
+         * Navigation controls to Use
+         *
+         * @hide
+         */
+        public static final String NAV_BUTTONS = "nav_buttons";
+
+        /**
+         * Volume key controls ringtone or media sound stream
+         *
+>>>>>>> 19442d7... [1/2] Base: NavigationBar customization
          * @hide
          */
         public static final String SIP_ADDRESS_ONLY = "SIP_ADDRESS_ONLY";
