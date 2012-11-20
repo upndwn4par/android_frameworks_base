@@ -55,6 +55,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.view.WindowManagerGlobal;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -128,6 +129,8 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected PopupMenu mNotificationBlamePopup;
 
     protected int mCurrentUserId = 0;
+
+    protected FrameLayout mStatusBarContainer;
 
     protected int mLayoutDirection = -1; // invalid
     private Locale mLocale;
@@ -254,6 +257,8 @@ public abstract class BaseStatusBar extends SystemUI implements
 
         mLocale = mContext.getResources().getConfiguration().locale;
         mLayoutDirection = TextUtils.getLayoutDirectionFromLocale(mLocale);
+
+        mStatusBarContainer = new FrameLayout(mContext);
 
         mPeek = new Peek(this, mContext);
         mNotificationHelper = new NotificationHelper(this, mContext);

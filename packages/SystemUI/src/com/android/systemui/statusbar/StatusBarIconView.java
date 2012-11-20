@@ -23,8 +23,12 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.database.ContentObserver;
+import android.os.Handler;
 import android.os.UserHandle;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -100,6 +104,10 @@ public class StatusBarIconView extends AnimatedImageView {
      * Returns whether the set succeeded.
      */
     public boolean set(StatusBarIcon icon) {
+        return set(icon, false);
+    }
+
+    private boolean set(StatusBarIcon icon, boolean force) {
         final boolean iconEquals = mIcon != null
                 && streq(mIcon.iconPackage, icon.iconPackage)
                 && mIcon.iconId == icon.iconId;
@@ -111,10 +119,10 @@ public class StatusBarIconView extends AnimatedImageView {
                 && mIcon.number == icon.number;
         mIcon = icon.clone();
         setContentDescription(icon.contentDescription);
-        if (!iconEquals) {
+        if (!iconEquals || force) {
             if (!updateDrawable(false /* no clear */)) return false;
         }
-        if (!levelEquals) {
+        if (!levelEquals || force) {
             setImageLevel(icon.iconLevel);
         }
 
@@ -132,7 +140,7 @@ public class StatusBarIconView extends AnimatedImageView {
             }
             invalidate();
         }
-        if (!visibilityEquals) {
+        if (!visibilityEquals || force) {
             setVisibility(icon.visible ? VISIBLE : GONE);
         }
         return true;
@@ -211,6 +219,10 @@ public class StatusBarIconView extends AnimatedImageView {
         if (mNotification != null) {
             event.setParcelableData(mNotification);
         }
+    }
+
+    public String getStatusBarSlot() {
+        return mSlot;
     }
 
     @Override
