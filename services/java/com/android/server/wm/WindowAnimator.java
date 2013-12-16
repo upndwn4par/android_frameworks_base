@@ -14,6 +14,7 @@ import static com.android.server.wm.WindowManagerService.LayoutFields.SET_WALLPA
 import android.content.Context;
 import android.os.Debug;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.util.Log;
 import android.util.Slog;
 import android.util.SparseArray;

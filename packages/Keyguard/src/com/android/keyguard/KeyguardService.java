@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 import android.os.Binder;
@@ -145,7 +146,9 @@ public class KeyguardService extends Service {
             checkPermission();
             mKeyguardViewMediator.onBootCompleted();
         }
+	public void setBackgroundBitmap(Bitmap bmp) {
+            mKeyguardViewMediator.setBackgroundBitmap(bmp);
+        }
     };
 
 }
-
