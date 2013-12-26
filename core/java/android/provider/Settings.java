@@ -2772,7 +2772,8 @@ public final class Settings {
         public static final String INCREASING_RING = "increasing_ring";
 
         /**
-         * Minimum volume index for increasing ring volume
+         * Volume key controls ringtone or media sound stream
+         *
          * @hide
          */
         public static final String INCREASING_RING_MIN_VOLUME = "increasing_ring_min_vol";
@@ -2819,6 +2820,13 @@ public final class Settings {
          * @hide
          */
         public static final String IMMERSIVE_MODE = "immersive_mode";
+
+        /**
+         * Minimum volume index for increasing ring volume
+         * Quick settings tiles to show on status bar
+         * @hide
+         */
+        public static final String QUICK_SETTINGS_TILES = "quick_settings_tiles";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
