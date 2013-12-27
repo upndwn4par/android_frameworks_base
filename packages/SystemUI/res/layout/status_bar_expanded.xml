@@ -39,8 +39,8 @@
 
     <include
         layout="@layout/carrier_label"
-        android:layout_height="0dip"
-        android:layout_width="0dip"
+        android:layout_height="@dimen/carrier_label_height"
+        android:layout_width="match_parent"
         android:layout_marginBottom="@dimen/close_handle_height"
         android:layout_gravity="bottom"
         />
