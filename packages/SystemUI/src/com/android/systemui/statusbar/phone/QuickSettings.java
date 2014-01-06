@@ -414,6 +414,7 @@ class QuickSettings {
                   // Brightness
                   final QuickSettingsBasicTile brightnessTile
                               = new QuickSettingsBasicTile(mContext);
+
                   brightnessTile.setTileId(Tile.BRIGHTNESS);
                   brightnessTile.setImageResource(R.drawable.ic_qs_brightness_auto_off);
                   brightnessTile.setOnClickListener(new View.OnClickListener() {
@@ -455,6 +456,7 @@ class QuickSettings {
                } else if (Tile.SETTINGS.toString().equals(tile.toString())) { // Settings tile
                   // Settings tile
                   final QuickSettingsBasicTile settingsTile = new QuickSettingsBasicTile(mContext);
+
                   settingsTile.setTileId(Tile.SETTINGS);
                   settingsTile.setImageResource(R.drawable.ic_qs_settings);
                   settingsTile.setOnClickListener(new View.OnClickListener() {
@@ -556,19 +558,20 @@ class QuickSettings {
                } else if (Tile.RSSI.toString().equals(tile.toString())) { // rssi tile
                   if (mModel.deviceHasMobileData()) {
                       // RSSI
-                      QuickSettingsTileView rssiTile = (QuickSettingsTileView)
-                              inflater.inflate(R.layout.quick_settings_tile, parent, false);
+                      final QuickSettingsNetworkFlipTile rssiTile
+                                  = new QuickSettingsNetworkFlipTile(mContext);
+
                       rssiTile.setTileId(Tile.RSSI);
-                      rssiTile.setContent(R.layout.quick_settings_tile_rssi, inflater);
                       final ConnectivityManager cms =
                          (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-                      rssiTile.setOnClickListener(new View.OnClickListener() {
+                      rssiTile.setBackLabel(mContext.getString(R.string.quick_settings_network_type));
+                      rssiTile.setFrontOnClickListener(new View.OnClickListener() {
                            @Override
                            public void onClick(View v) {
                               boolean currentState = cms.getMobileDataEnabled();
                               cms.setMobileDataEnabled(!currentState);
                       }} );
-                      rssiTile.setOnLongClickListener(new View.OnLongClickListener() {
+                      rssiTile.setFrontOnLongClickListener(new View.OnLongClickListener() {
                             @Override
                             public boolean onLongClick(View v) {
                                 Intent intent = new Intent();
@@ -579,33 +582,43 @@ class QuickSettings {
                                 return true;
                             }
                       });
-                      mModel.addRSSITile(rssiTile, new NetworkActivityCallback() {
+                      mModel.addRSSITile(rssiTile.getFront(), new NetworkActivityCallback() {
                             @Override
                             public void refreshView(QuickSettingsTileView view, State state) {
                                 RSSIState rssiState = (RSSIState) state;
-                                ImageView iv = (ImageView) view.findViewById(R.id.rssi_image);
-                                ImageView iov = (ImageView) view.findViewById(R.id.rssi_overlay_image);
-                                TextView tv = (TextView) view.findViewById(R.id.rssi_textview);
-                                TextView itv = (TextView) view.findViewById(R.id.rssi_type_text);
                                 // Force refresh
-                                iv.setImageDrawable(null);
-                                iv.setImageResource(rssiState.signalIconId);
+                                rssiTile.setFrontImageDrawable(null);
+                                rssiTile.setFrontImageResource(rssiState.signalIconId);
 
                                 if (rssiState.dataTypeIconId > 0) {
-                                    iov.setImageResource(rssiState.dataTypeIconId);
+                                    rssiTile.setFrontImageOverlayResource(rssiState.dataTypeIconId);
                                 } else {
-                                    iov.setImageDrawable(null);
+                                    rssiTile.setFrontImageOverlayDrawable(null);
                                 }
-                                setActivity(view, rssiState);
 
-                                tv.setText(state.label);
-                                tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, view.getTextSizes());
-                                itv.setText(rssiState.networkType);
-                                itv.setTextSize(TypedValue.COMPLEX_UNIT_PX, view.getTextSizes());
-                                view.setContentDescription(mContext.getResources().getString(
+                                rssiTile.setFrontText(state.label);
+                                rssiTile.setContentDescription(mContext.getResources().getString(
                                      R.string.accessibility_quick_settings_mobile,
                                      rssiState.signalContentDescription, rssiState.dataContentDescription,
                                      state.label));
+                           }
+                      });
+                      rssiTile.setBackOnLongClickListener(new View.OnLongClickListener() {
+                           @Override
+                           public boolean onLongClick(View v) {
+                               Intent intent = new Intent(Intent.ACTION_MAIN);
+                               intent.setClassName("com.android.phone", "com.android.phone.Settings");
+                               intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                               startSettingsActivity(intent);
+                               return true;
+                           }
+                      });
+
+                      mModel.addMobileNetworkTile(rssiTile.getBack(), new QuickSettingsModel.RefreshCallback() {
+                           @Override
+                           public void refreshView(QuickSettingsTileView view, State mobileNetworkState) {
+                               rssiTile.setBackFunction(mobileNetworkState.label);
+                               rssiTile.setBackImageResource(mobileNetworkState.iconId);
                            }
                       });
                       parent.addView(rssiTile);
@@ -617,6 +630,7 @@ class QuickSettings {
                       || DEBUG_GONE_TILES) {
                       final QuickSettingsBasicTile rotationLockTile
                             = new QuickSettingsBasicTile(mContext);
+
                       rotationLockTile.setTileId(Tile.ROTATION);
                       rotationLockTile.setOnClickListener(new View.OnClickListener() {
                            @Override
@@ -711,6 +725,7 @@ class QuickSettings {
                   // Airplane Mode
                   final QuickSettingsBasicTile airplaneTile
                         = new QuickSettingsBasicTile(mContext);
+
                   airplaneTile.setTileId(Tile.AIRPLANE);
                   mModel.addAirplaneModeTile(airplaneTile, new QuickSettingsModel.RefreshCallback() {
                         @Override
@@ -781,6 +796,7 @@ class QuickSettings {
                   // sync
                   final QuickSettingsBasicTile SyncTile
                         = new QuickSettingsBasicTile(mContext);
+
                   SyncTile.setTileId(Tile.SYNC);
                   SyncTile.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
@@ -878,6 +894,7 @@ class QuickSettings {
                   // Sleep
                   final QuickSettingsFlipTile SleepTile
                        = new QuickSettingsFlipTile(mContext);
+
                   SleepTile.setTileId(Tile.SLEEP);
                   SleepTile.setFrontImageResource(R.drawable.ic_qs_sleep);
                   SleepTile.setFrontText(mContext.getString(R.string.quick_settings_screen_sleep));
@@ -1074,8 +1091,8 @@ class QuickSettings {
         // Alarm tile
         final QuickSettingsBasicTile alarmTile
                 = new QuickSettingsBasicTile(mContext);
-        alarmTile.setTemporary(true);
         alarmTile.setImageResource(R.drawable.ic_qs_alarm_on);
+        alarmTile.setTemporary(true);
         alarmTile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
