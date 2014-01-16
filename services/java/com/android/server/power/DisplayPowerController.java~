@@ -56,10 +56,16 @@ import android.util.Spline;
 import android.util.TimeUtils;
 import android.view.DisplayInfo;
 import android.view.SurfaceControl;
+<<<<<<< HEAD
 
 import com.android.internal.policy.impl.keyguard.KeyguardServiceWrapper;
 import com.android.internal.policy.IKeyguardService;
 
+=======
+
+import com.android.internal.policy.impl.keyguard.KeyguardServiceWrapper;
+import com.android.internal.policy.IKeyguardService;
+>>>>>>> 2017828... [1/2] Base: Lockscreen blur
 
 /**
  * Controls the power state of the display.
@@ -385,13 +391,15 @@ final class DisplayPowerController {
         }
 
     };
+<<<<<<< HEAD
+=======
 
     // Screen-off animation
     private static final int SCREEN_OFF_FADE = 0;
     private static final int SCREEN_OFF_CRT = 1;
     private static final int SCREEN_OFF_SCALE = 2;
     private int mScreenOffAnimation;
-
+>>>>>>> 2017828... [1/2] Base: Lockscreen blur
 
     /**
      * Creates the display power controller.
@@ -528,8 +536,10 @@ final class DisplayPowerController {
     public boolean requestPowerState(DisplayPowerRequest request,
             boolean waitForNegativeProximity) {
 
-
+<<<<<<< HEAD
 	// Lockscreen blur
+=======
+>>>>>>> 2017828... [1/2] Base: Lockscreen blur
         final int MAX_BLUR_WIDTH = 900;
         final int MAX_BLUR_HEIGHT = 1600;
 
@@ -559,6 +569,7 @@ final class DisplayPowerController {
                 mDisplayReadyLocked = false;
             }
 
+<<<<<<< HEAD
 	    boolean seeThrough = Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.LOCKSCREEN_SEE_THROUGH, 0) == 1;
             int blurRadius = Settings.System.getInt(mContext.getContentResolver(),
@@ -571,7 +582,18 @@ final class DisplayPowerController {
                             .getDisplayInfo(mDisplayManager.getDisplayIds() [0]);
                     /* Limit max screenshot capture layer to 22000.
                        Prevents status bar and navigation bar from being captured.*/ 
-
+=======
+            boolean seeThrough = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.LOCKSCREEN_SEE_THROUGH, 0) == 1;
+            if (changed && !mPendingRequestChangedLocked) {
+                if ((mKeyguardService == null || !mKeyguardService.isShowing()) &&
+                            request.screenState == DisplayPowerRequest.SCREEN_STATE_OFF &&
+                            seeThrough) {
+                    DisplayInfo di = mDisplayManager
+                            .getDisplayInfo(mDisplayManager.getDisplayIds() [0]);
+                    /* Limit max screenshot capture layer to 22000.
+                       Prevents status bar and navigation bar from being captured.*/
+>>>>>>> 2017828... [1/2] Base: Lockscreen blur
                     Bitmap bmp = SurfaceControl
                             .screenshot(di.getNaturalWidth(),di.getNaturalHeight(), 0, 22000);
                     if (bmp != null) {
@@ -579,15 +601,22 @@ final class DisplayPowerController {
 
                         // scale image if its too large
                         if (bmp.getWidth() > MAX_BLUR_WIDTH) {
+<<<<<<< HEAD
                             tmpBmp = bmp.createScaledBitmap(bmp, MAX_BLUR_WIDTH, MAX_BLUR_HEIGHT, true);
+=======
+                                tmpBmp = bmp.createScaledBitmap(bmp, MAX_BLUR_WIDTH, MAX_BLUR_HEIGHT, true);
+>>>>>>> 2017828... [1/2] Base: Lockscreen blur
                         }
 
                         mKeyguardService.setBackgroundBitmap(tmpBmp);
                         bmp.recycle();
                         tmpBmp.recycle();
                     }
-
+<<<<<<< HEAD
                 } else if (mKeyguardService != null && (!seeThrough || blurRadius == 0)) mKeyguardService.setBackgroundBitmap(null);
+=======
+                } else if (!seeThrough) mKeyguardService.setBackgroundBitmap(null);
+>>>>>>> 2017828... [1/2] Base: Lockscreen blur
                 mPendingRequestChangedLocked = true;
                 sendUpdatePowerStateLocked();
             }

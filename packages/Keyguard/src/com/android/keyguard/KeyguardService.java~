@@ -145,7 +145,11 @@ public class KeyguardService extends Service {
             checkPermission();
             mKeyguardViewMediator.onBootCompleted();
         }
+<<<<<<< HEAD
+	public void setBackgroundBitmap(Bitmap bmp) {
+=======
         public void setBackgroundBitmap(Bitmap bmp) {
+>>>>>>> 2017828... [1/2] Base: Lockscreen blur
             mKeyguardViewMediator.setBackgroundBitmap(bmp);
         }
     };
