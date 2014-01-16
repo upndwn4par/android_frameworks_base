@@ -2128,7 +2128,6 @@ public final class Settings {
         @Deprecated
         public static final String WINDOW_ANIMATION_SCALE = Global.WINDOW_ANIMATION_SCALE;
 
-
         /**
          * Scaling factor for activity transition animations. Setting to 0 will disable window
          * animations.

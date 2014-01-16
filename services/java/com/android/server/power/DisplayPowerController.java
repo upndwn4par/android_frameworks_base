@@ -528,7 +528,6 @@ final class DisplayPowerController {
     public boolean requestPowerState(DisplayPowerRequest request,
             boolean waitForNegativeProximity) {
 
-
 	// Lockscreen blur
         final int MAX_BLUR_WIDTH = 900;
         final int MAX_BLUR_HEIGHT = 1600;
@@ -559,19 +558,16 @@ final class DisplayPowerController {
                 mDisplayReadyLocked = false;
             }
 
-	    boolean seeThrough = Settings.System.getInt(mContext.getContentResolver(),
+            boolean seeThrough = Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.LOCKSCREEN_SEE_THROUGH, 0) == 1;
-            int blurRadius = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.LOCKSCREEN_BLUR_RADIUS, 12);
             if (changed && !mPendingRequestChangedLocked) {
-		if ((mKeyguardService == null || !mKeyguardService.isShowing()) &&
+                if ((mKeyguardService == null || !mKeyguardService.isShowing()) &&
                             request.screenState == DisplayPowerRequest.SCREEN_STATE_OFF &&
-                            seeThrough && blurRadius > 0) {
+                            seeThrough) {
                     DisplayInfo di = mDisplayManager
                             .getDisplayInfo(mDisplayManager.getDisplayIds() [0]);
                     /* Limit max screenshot capture layer to 22000.
-                       Prevents status bar and navigation bar from being captured.*/ 
-
+                       Prevents status bar and navigation bar from being captured.*/
                     Bitmap bmp = SurfaceControl
                             .screenshot(di.getNaturalWidth(),di.getNaturalHeight(), 0, 22000);
                     if (bmp != null) {
@@ -586,8 +582,7 @@ final class DisplayPowerController {
                         bmp.recycle();
                         tmpBmp.recycle();
                     }
-
-                } else if (mKeyguardService != null && (!seeThrough || blurRadius == 0)) mKeyguardService.setBackgroundBitmap(null);
+                } else if (!seeThrough) mKeyguardService.setBackgroundBitmap(null);
                 mPendingRequestChangedLocked = true;
                 sendUpdatePowerStateLocked();
             }
