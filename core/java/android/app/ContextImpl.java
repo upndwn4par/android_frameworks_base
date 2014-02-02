@@ -17,6 +17,8 @@
 
 package android.app;
 
+import android.content.res.IThemeService;
+import android.content.res.ThemeManager;
 import android.os.Build;
 import com.android.internal.policy.PolicyManager;
 import com.android.internal.util.Preconditions;
@@ -598,6 +600,14 @@ class ContextImpl extends Context {
         registerService(CONSUMER_IR_SERVICE, new ServiceFetcher() {
             public Object createService(ContextImpl ctx) {
                 return new ConsumerIrManager(ctx);
+            }});
+
+        registerService(THEME_SERVICE, new ServiceFetcher() {
+            public Object createService(ContextImpl ctx) {
+                IBinder b = ServiceManager.getService(THEME_SERVICE);
+                IThemeService service = IThemeService.Stub.asInterface(b);
+                return new ThemeManager(ctx.getOuterContext(),
+                        service);
             }});
     }
 
@@ -1931,12 +1941,8 @@ class ContextImpl extends Context {
             throw new IllegalArgumentException("overrideConfiguration must not be null");
         }
 
-        ContextImpl c = new ContextImpl();
-        c.init(mPackageInfo, null, mMainThread);
-        c.mResources = mResourcesManager.getTopLevelResources(mPackageInfo.getResDir(),
-                mPackageInfo.getOverlayDirs(), getDisplayId(), overrideConfiguration,
-                mResources.getCompatibilityInfo(), mActivityToken);
-        return c;
+        return new ContextImpl(this, mMainThread, mPackageInfo, mActivityToken,
+                mUser, mRestricted, mDisplay, overrideConfiguration);
     }
 
     @Override
@@ -1945,15 +1951,8 @@ class ContextImpl extends Context {
             throw new IllegalArgumentException("display must not be null");
         }
 
-        int displayId = display.getDisplayId();
-
-        ContextImpl context = new ContextImpl();
-        context.init(mPackageInfo, null, mMainThread);
-        context.mDisplay = display;
-        DisplayAdjustments daj = getDisplayAdjustments(displayId);
-        context.mResources = mResourcesManager.getTopLevelResources(mPackageInfo.getResDir(),
-                mPackageInfo.getOverlayDirs(), displayId, null, daj.getCompatibilityInfo(), null);
-        return context;
+        return new ContextImpl(this, mMainThread, mPackageInfo, mActivityToken,
+                mUser, mRestricted, display, mOverrideConfiguration);
     }
 
     private int getDisplayId() {
@@ -2056,8 +2055,8 @@ class ContextImpl extends Context {
                     || (compatInfo != null && compatInfo.applicationScale
                             != resources.getCompatibilityInfo().applicationScale)) {
                 resources = mResourcesManager.getTopLevelResources(
-                        packageInfo.getResDir(), displayId,
-                        overrideConfiguration, compatInfo, activityToken);
+                        packageInfo.getResDir(), packageInfo.getOverlayDirs(), displayId,
+                        packageInfo.getAppDir(), overrideConfiguration, compatInfo, activityToken, mOuterContext);
             }
         }
         mResources = resources;
@@ -2078,35 +2077,6 @@ class ContextImpl extends Context {
                 mOpPackageName = mBasePackageName;
             }
         }
-        mResources = mPackageInfo.getResources(mainThread);
-        mResourcesManager = ResourcesManager.getInstance();
-
-        CompatibilityInfo compatInfo =
-                container == null ? null : container.getCompatibilityInfo();
-        if (mResources != null &&
-                ((compatInfo != null && compatInfo.applicationScale !=
-                        mResources.getCompatibilityInfo().applicationScale)
-                || activityToken != null)) {
-            if (DEBUG) {
-                Log.d(TAG, "loaded context has different scaling. Using container's" +
-                        " compatiblity info:" + container.getDisplayMetrics());
-            }
-            if (compatInfo == null) {
-                compatInfo = packageInfo.getCompatibilityInfo();
-            }
-            mDisplayAdjustments.setCompatibilityInfo(compatInfo);
-            mDisplayAdjustments.setActivityToken(activityToken);
-            mResources = mResourcesManager.getTopLevelResources(mPackageInfo.getResDir(),
-                    mPackageInfo.getOverlayDirs(), Display.DEFAULT_DISPLAY, null, compatInfo,
-                    activityToken);
-        } else {
-            mDisplayAdjustments.setCompatibilityInfo(packageInfo.getCompatibilityInfo());
-            mDisplayAdjustments.setActivityToken(activityToken);
-        }
-        mMainThread = mainThread;
-        mActivityToken = activityToken;
-        mContentResolver = new ApplicationContentResolver(this, mainThread, user);
-        mUser = user;
     }
 
     void installSystemApplicationInfo(ApplicationInfo info) {
