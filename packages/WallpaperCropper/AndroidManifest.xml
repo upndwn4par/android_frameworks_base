@@ -6,6 +6,9 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.SET_KEYGUARD_WALLPAPER" />
     <uses-permission android:name="android.permission.READ_THEMES" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 
     <application android:requiredForAllUsers="true">
         <activity
@@ -36,6 +39,18 @@
             android:theme="@style/Theme.WallpaperCropper"
             android:label="@string/pick_wallpaper"
             android:icon="@mipmap/ic_launcher_wallpaper"
+            android:finishOnCloseSystemDialogs="true">
+            <intent-filter>
+                <action android:name="android.intent.action.SET_WALLPAPER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="LockscreenWallpaper"
+            android:theme="@style/Theme.WallpaperCropper"
+            android:label="@string/pick_lockscreen"
+            android:icon="@mipmap/ic_lockscreen_wallpaper"
             android:finishOnCloseSystemDialogs="true">
             <intent-filter>
                 <action android:name="android.intent.action.SET_WALLPAPER" />
