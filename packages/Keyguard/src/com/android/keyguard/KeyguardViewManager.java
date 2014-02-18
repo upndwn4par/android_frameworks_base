@@ -132,12 +132,6 @@ public class KeyguardViewManager {
         }
     };
 
-    private void setCustomBackground(Bitmap bmp) {
-        mKeyguardHost.setCustomBackground(bmp != null ?
-                    new BitmapDrawable(mContext.getResources(), bmp) : null);
-        updateShowWallpaper(bmp == null);
-    }
-
     public interface ShowListener {
         void onShown(IBinder windowToken);
     };
@@ -234,9 +228,21 @@ public class KeyguardViewManager {
         return res.getBoolean(R.bool.config_enableLockScreenTranslucentDecor);
     }
 
-    public void setBackgroundBitmap(Bitmap bmp) {
-        if (bmp != null) {
-            mBlurredImage = blurBitmap(bmp, bmp.getWidth() < 900 ? 14: 18);
+    private void setCustomBackground(Bitmap bmp) {
+
+        mKeyguardHost.setCustomBackground( new BitmapDrawable(mContext.getResources(),
+
+                    bmp != null ? bmp : mBlurredImage) );
+
+        updateShowWallpaper(bmp == null && mBlurredImage == null);
+
+    }
+
+     public void setBackgroundBitmap(Bitmap bmp) {
+
+        if (bmp != null && mSeeThrough && mBlurRadius > 0) {
+
+            mBlurredImage = blurBitmap(bmp, mBlurRadius);
         } else {
             mBlurredImage = null;
         }
