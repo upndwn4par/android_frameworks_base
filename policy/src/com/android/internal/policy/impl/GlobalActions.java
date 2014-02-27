@@ -1,6 +1,8 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
  *
+ * Modifications Copyright (C) 2013 The OmniROM Project
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -114,6 +116,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mHasTelephony;
     private boolean mHasVibrator;
     private final boolean mShowSilentToggle;
+    private final boolean mShowScreenRecord;
     private ConnectivityManager mConnectivityManager;
 
     /**
@@ -149,6 +152,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         mShowSilentToggle = SHOW_SILENT_TOGGLE && !mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_useFixedVolume);
+
+        mShowScreenRecord = mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_enableScreenrecordChord);
     }
 
     /**
@@ -354,7 +360,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         }
 
         // next: screen record, if enabled
-        if (Settings.System.getInt(mContext.getContentResolver(),
+        if (mShowScreenRecord) {
+	    if (Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.SCREENRECORD_IN_POWER_MENU, 0) != 0) {
                 mItems.add(
                     new SinglePressAction(com.android.internal.R.drawable.ic_lock_screen_record,
@@ -376,6 +383,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                             return true;
                         }
                     });
+	    }
         }
 
         // next: airplane mode
