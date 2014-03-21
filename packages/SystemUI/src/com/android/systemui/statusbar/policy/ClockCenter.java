@@ -48,3 +48,5 @@ public class ClockCenter extends Clock {
             setVisibility(View.GONE);
     }
 }
+
+
