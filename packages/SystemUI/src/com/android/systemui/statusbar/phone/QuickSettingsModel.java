@@ -37,6 +37,7 @@ import android.media.MediaRouter.RouteInfo;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiInfo;
+import android.nfc.NfcAdapter;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.os.SystemProperties;
@@ -118,6 +119,9 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     public static class BluetoothState extends State {
         boolean connected = false;
         String stateContentDescription;
+    }
+    static class NfcState extends State {
+        boolean isEnabled;
     }
     public static class RotationLockState extends State {
         boolean visible = false;
@@ -203,6 +207,16 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         }
     };
 
+    /** Broadcast receive to determine NFC. */
+    private BroadcastReceiver mNfcIntentReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED)) {
+                refreshNfcTile();
+            }
+        }
+    };
+
     /** ContentObserver to determine the ringer */
     private class RingerObserver extends ContentObserver {
         public RingerObserver(Handler handler) {
@@ -247,7 +261,8 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             super(handler);
         }
 
-        @Override public void onChange(boolean selfChange) {
+        @Override
+        public void onChange(boolean selfChange) {
             onNextAlarmChanged();
         }
 
@@ -265,7 +280,8 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             super(handler);
         }
 
-        @Override public void onChange(boolean selfChange) {
+        @Override
+        public void onChange(boolean selfChange) {
             onBugreportChanged();
         }
 
@@ -535,6 +551,10 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private RefreshCallback mSettingsCallback;
     private State mSettingsState = new State();
 
+    private QuickSettingsTileView mNfcTile;
+    private RefreshCallback mNfcCallback;
+    private State mNfcState = new NfcState();
+
     private QuickSettingsTileView mSslCaCertWarningTile;
     private RefreshCallback mSslCaCertWarningCallback;
     private State mSslCaCertWarningState = new State();
@@ -617,6 +637,10 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         ringerIntentFilter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION);
         context.registerReceiver(mRingerIntentReceiver, ringerIntentFilter);
 
+        IntentFilter nfcIntentFilter = new IntentFilter();
+        nfcIntentFilter.addAction(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED);
+        context.registerReceiver(mNfcIntentReceiver, nfcIntentFilter);
+
         IntentFilter torchIntentFilter = new IntentFilter();
         torchIntentFilter.addAction(OmniTorchConstants.ACTION_STATE_CHANGED);
         context.registerReceiver(mTorchIntentReceiver, torchIntentFilter);
@@ -643,6 +667,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         refreshBrightnessTile();
         refreshImmersiveTile();
         onQuiteHourChanged();
+        refreshNfcTile();
         refreshRotationLockTile();
         refreshRssiTile();
         refreshLocationTile();
@@ -650,6 +675,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         updateRingerState();
         updateSleepState();
         onMobileNetworkChanged();
+        onQuiteHourChanged();
     }
 
     // Settings
@@ -663,6 +689,27 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         Resources r = mContext.getResources();
         mSettingsState.label = r.getString(R.string.quick_settings_settings_label);
         mSettingsCallback.refreshView(mSettingsTile, mSettingsState);
+    }
+
+    // NFC
+    void addNfcTile(QuickSettingsTileView view, RefreshCallback cb) {
+        mNfcTile = view;
+        mNfcCallback = cb;
+        refreshNfcTile();
+    }
+
+    void refreshNfcTile() {
+        try {
+            Resources r = mContext.getResources();
+            if(NfcAdapter.getNfcAdapter(mContext).isEnabled()) {
+                mNfcState.iconId = R.drawable.ic_qs_nfc_on;
+                mNfcState.label = r.getString(R.string.quick_settings_nfc_on);
+            } else {
+                mNfcState.iconId = R.drawable.ic_qs_nfc_off;
+                mNfcState.label = r.getString(R.string.quick_settings_nfc_off);
+            }
+            mNfcCallback.refreshView(mNfcTile, mNfcState);
+        } catch (Exception e) {}
     }
 
     // User
