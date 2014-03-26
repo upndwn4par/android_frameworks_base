@@ -21,4 +21,5 @@
     <color name="batterymeter_percent_warn_color">#FFFF0000</color><!-- red -->
     <color name="batterymeter_percent_critical_color">#FFFFFF00</color><!-- yellow -->
     <color name="status_bar_traffic_color">#FF0099CC</color>
+    <color name="statusbar_signal_text_color">#FF0099CC</color>
 </resources>
