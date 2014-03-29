@@ -33,4 +33,7 @@
 
     <!-- status message in phone options dialog for when mobile data is off -->
     <string name="global_actions_mobile_data_off_status">Mobile data is OFF</string>
+
+    <!-- Back kill app toast -->
+    <string name="app_killed_message">App killed</string>
 </resources> 

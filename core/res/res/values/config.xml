@@ -1307,4 +1307,9 @@
         <item>333</item>
         <item>353</item>
     </string-array>
+
+    <!-- Graviton -->
+
+    <!-- Back kill timeout delay -->
+    <integer name="config_backKillTimeout">1000</integer>
 </resources>
