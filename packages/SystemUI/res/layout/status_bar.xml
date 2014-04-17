@@ -78,8 +78,7 @@
 
         <com.android.systemui.statusbar.policy.Traffic
             android:id="@+id/traffic"
-            android:textSize="14dp"
-            android:textColor="#ff0099cc"
+            android:textAppearance="@style/TextAppearance.StatusBar.Traffic"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:singleLine="true"
@@ -117,8 +116,7 @@
     
             <com.android.systemui.statusbar.policy.Clock
                 android:id="@+id/clock"
-        	android:textSize="18dp"
-        	android:textColor="#ff0099cc"
+        	android:textAppearance="@style/TextAppearance.StatusBar.Clock"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:singleLine="true"
