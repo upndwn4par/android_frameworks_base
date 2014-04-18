@@ -96,12 +96,10 @@ public class SignalText extends TextView {
 
     private void updateSettings() {
         ContentResolver resolver = getContext().getContentResolver();
-        mSignalColor = Settings.System.getInt(resolver,
-                Settings.System.STATUSBAR_SIGNAL_TEXT_COLOR, 0xFF0099CC);
-        if (mSignalColor == Integer.MIN_VALUE) {
-            // flag to reset the color
-            mSignalColor = 0xFF0099CC;
-        }
+
+        int mSignalColor = Settings.System.getInt(resolver, Settings.System.STATUSBAR_SIGNAL_TEXT_COLOR,
+                0xFFFFFFFF);
+
         setTextColor(mSignalColor);
 
         mTextStyle = Settings.System.getInt(getContext().getContentResolver(),
