@@ -36,6 +36,21 @@ public class Traffic extends TextView {
     private int MB = KB * KB;
     private int GB = MB * KB;
 
+    private int mTrafficColor;
+
+
+    private ContentObserver mSettingsObserver = new ContentObserver(new Handler()) {
+        @Override
+        public void onChange(boolean selfChange) {
+            updateSettings();
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            updateSettings();
+        }
+    };
+
     private Handler mTrafficHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -140,12 +155,18 @@ public class Traffic extends TextView {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
+        ContentResolver resolver = mContext.getContentResolver();
+        resolver.registerContentObserver(
+                Settings.System.getUriFor(Settings.System.STATUS_BAR_TRAFFIC_COLOR), false,
+                mSettingsObserver);
+
         if (!mAttached) {
             mAttached = true;
             IntentFilter filter = new IntentFilter();
             filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
             mContext.registerReceiver(mIntentReceiver, filter, null, getHandler());
         }
+
         updateSettings();
     }
 
@@ -177,6 +198,12 @@ public class Traffic extends TextView {
 
     private void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
+
+        int mTrafficColor = Settings.System.getInt(resolver, Settings.System.STATUS_BAR_TRAFFIC_COLOR,
+                0xFFFFFFFF);
+
+        setTextColor(mTrafficColor);
+
         int intState = Settings.System.getInt(resolver, Settings.System.STATUS_BAR_TRAFFIC, 0);
         if (intState == 2) {
             KB = KILOBYTE;

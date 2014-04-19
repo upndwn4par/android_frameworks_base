@@ -2672,6 +2672,12 @@ public final class Settings {
          */
          public static final String STATUS_BAR_TRAFFIC = "status_bar_traffic";
 
+        /**
+         * @hide
+	 * Network speed indicator color
+         */
+         public static final String STATUS_BAR_TRAFFIC_COLOR = "status_bar_traffic_color";
+
          /**
          * Whether to show statusbar signal text
          *
