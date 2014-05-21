@@ -134,7 +134,6 @@ public class ThemeService extends IThemeService.Stub {
     }
 
     public void systemRunning() {
-        applyDefaultThemeIfFirstBoot();
     }
 
     private void doApplyTheme(String pkgName, List<String> components) {
@@ -659,7 +658,7 @@ public class ThemeService extends IThemeService.Stub {
         }
     };
 
-    public void applyDefaultThemeIfFirstBoot() {
+    public void applyDefaultTheme() {
         mContext.enforceCallingOrSelfPermission(
                 Manifest.permission.ACCESS_THEME_MANAGER, null);
         final ContentResolver resolver = mContext.getContentResolver();
