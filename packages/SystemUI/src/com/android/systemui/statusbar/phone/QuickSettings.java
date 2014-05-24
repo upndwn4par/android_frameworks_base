@@ -378,8 +378,9 @@ class QuickSettings {
 
     private void addSystemTiles(ViewGroup parent, LayoutInflater inflater) {
         // Wi-fi
-        final QuickSettingsBasicTile wifiTile
-                = new QuickSettingsBasicTile(mContext);
+        final QuickSettingsTileView wifiTile = (QuickSettingsTileView)
+                inflater.inflate(R.layout.quick_settings_tile, parent, false);
+        wifiTile.setContent(R.layout.quick_settings_tile_wifi, inflater);
         if (LONG_PRESS_TOGGLES) {
             wifiTile.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
