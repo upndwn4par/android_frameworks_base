@@ -34,4 +34,8 @@
     <!-- Quick Settings tile geometry: text size for 4 tile per row-->
     <dimen name="qs_4_column_text_size">10sp</dimen>
 
+    <!-- Hover dimens -->
+    <dimen name="hover_height">64dp</dimen>
+    <dimen name="hover_cling_width">-1px</dimen>
+
 </resources>
