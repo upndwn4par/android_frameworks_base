@@ -74,8 +74,9 @@ public class NotificationHelper {
     public static final int DEFAULT_ALPHA = 255;
 
 
-    private TelephonyManager mTelephonyManager;
     private BaseStatusBar mStatusBar;
+    private Context mContext;
+    private IntentFilter mPeekAppFilter;
     private Peek mPeek;
     private static final String PEEK_SHOWING_BROADCAST = "com.jedga.peek.PEEK_SHOWING";
     private static final String PEEK_HIDING_BROADCAST = "com.jedga.peek.PEEK_HIDING";
@@ -85,15 +86,12 @@ public class NotificationHelper {
     private static final double DISTANCE_THRESHOLD = 20.0;
     private static final int HOVER_STYLE = 0;
     private static final int DEFAULT_STYLE = 1;
-
-    private Context mContext;
     private Hover mHover;
-    private IntentFilter mPeekAppFilter;
     private PeekAppReceiver mPeekAppReceiver;
     private ActivityManager mActivityManager;
-
     public boolean mRingingOrConnected = false;
     public boolean mPeekAppOverlayShowing = false;
+    private TelephonyManager mTelephonyManager;
 
     /**
      * Creates a new instance
@@ -129,12 +127,12 @@ public class NotificationHelper {
         return componentInfo.getPackageName();
     }
 
-    public Hover getHover() {
-        return mHover;
-    }
-
     public Peek getPeek() {
         return mPeek;
+    }
+
+    public Hover getHover() {
+        return mHover;
     }
 
     public boolean isHoverEnabled() {
@@ -296,7 +294,7 @@ public class NotificationHelper {
             String newNotificationText = getNotificationTitle(newNotif);
 
             if(newNotificationText == null ? oldNotificationText != null :
-               !newNotificationText.equals(oldNotificationText)) return true;
+                   !newNotificationText.equals(oldNotificationText)) return true;
 
             // Last chance, check when the notifications were posted. If times
             // are equal, we shouldn't display the new notification. (Should apply to peek only)
@@ -400,7 +398,7 @@ public class NotificationHelper {
     public boolean isSimPanelShowing() {
         int state = mTelephonyManager.getSimState();
         return state == TelephonyManager.SIM_STATE_PIN_REQUIRED
-                 || state == TelephonyManager.SIM_STATE_PUK_REQUIRED
-                 || state == TelephonyManager.SIM_STATE_NETWORK_LOCKED;
+                | state == TelephonyManager.SIM_STATE_PUK_REQUIRED
+                | state == TelephonyManager.SIM_STATE_NETWORK_LOCKED;
     }
 }
