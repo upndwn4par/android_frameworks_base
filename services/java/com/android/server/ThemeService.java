@@ -572,8 +572,12 @@ public class ThemeService extends IThemeService.Stub {
         homeIntent.addCategory(Intent.CATEGORY_HOME);
 
         List<ResolveInfo> infos = pm.queryIntentActivities(homeIntent, 0);
+        List<ResolveInfo> themeChangeInfos = pm.queryBroadcastReceivers(
+                new Intent(ThemeUtils.ACTION_THEME_CHANGED), 0);
         for(ResolveInfo info : infos) {
-            if (info.activityInfo != null && info.activityInfo.applicationInfo != null) {
+            if (info.activityInfo != null && info.activityInfo.applicationInfo != null &&
+                    !isSetupActivity(info) && !handlesThemeChanges(
+                    info.activityInfo.applicationInfo.packageName, themeChangeInfos)) {
                 String pkgToStop = info.activityInfo.applicationInfo.packageName;
                 Log.d(TAG, "Force stopping " +  pkgToStop + " for theme change");
                 try {
@@ -591,6 +595,22 @@ public class ThemeService extends IThemeService.Stub {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean isSetupActivity(ResolveInfo info) {
+        return GOOGLE_SETUPWIZARD_PACKAGE.equals(info.activityInfo.packageName) ||
+               CM_SETUPWIZARD_PACKAGE.equals(info.activityInfo.packageName);
+    }
+
+    private boolean handlesThemeChanges(String pkgName, List<ResolveInfo> infos) {
+        if (infos != null && infos.size() > 0) {
+            for (ResolveInfo info : infos) {
+                if (info.activityInfo.applicationInfo.packageName.equals(pkgName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void postProgress(String pkgName) {
