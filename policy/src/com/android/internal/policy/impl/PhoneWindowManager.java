@@ -1,5 +1,7 @@
 /*
+ * Copyright (C) 2008 The Android Open Source Project
  * Modifications Copyright (C) 2013 The OmniROM Project
+ * Modifications Copyright (C) 2012-2013 The CyanogenMod Project
  *
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,6 +42,7 @@ import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.pm.ThemeUtils;
 import android.content.res.CompatibilityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -1755,7 +1758,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             if (DEBUG_STARTING_WINDOW) Slog.d(TAG, "addStartingWindow " + packageName
                     + ": nonLocalizedLabel=" + nonLocalizedLabel + " theme="
                     + Integer.toHexString(theme));
-
             if (theme != context.getThemeResId() || labelRes != 0) {
                 try {
                     context = context.createPackageContext(packageName, 0);
@@ -2897,7 +2899,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             // For purposes of putting out fake window up to steal focus, we will
             // drive nav being hidden only by whether it is requested.
             final int sysui = mLastSystemUiFlags;
-
             boolean navVisible = (sysui & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
             boolean navTranslucent = (sysui & View.NAVIGATION_BAR_TRANSLUCENT) != 0;
             boolean immersive = (sysui & View.SYSTEM_UI_FLAG_IMMERSIVE) != 0;
@@ -2905,7 +2906,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             boolean navAllowedHidden = immersive || immersiveSticky;
             navTranslucent &= !immersiveSticky;  // transient trumps translucent
             navTranslucent &= areTranslucentBarsAllowed();
-
 
             // When the navigation bar isn't visible, we put up a fake
             // input window to catch all touch events.  This way we can
