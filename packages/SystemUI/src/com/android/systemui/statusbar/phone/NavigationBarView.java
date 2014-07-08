@@ -358,6 +358,7 @@ public class NavigationBarView extends LinearLayout {
     public void updateResources(Resources res) {
         mThemedResources = res;
         getIcons(mThemedResources);
+        mBarTransitions.updateResources(res);
     }
 
     @Override

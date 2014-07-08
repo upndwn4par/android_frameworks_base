@@ -63,6 +63,10 @@ public class BarTransitions {
         }
     }
 
+    public void updateResources(Resources res) {
+        mBarBackground.updateResources(res);
+    }
+
     public int getMode() {
         return mMode;
     }
@@ -109,11 +113,12 @@ public class BarTransitions {
     }
 
     private static class BarBackgroundDrawable extends Drawable {
-        private final int mOpaque;
-        private final int mSemiTransparent;
-        private final Drawable mGradient;
+        private final int mGradientResourceId;
         private final TimeInterpolator mInterpolator;
 
+        private int mOpaque;
+        private int mSemiTransparent;
+        private Drawable mGradient;
         private int mMode = -1;
         private boolean mAnimating;
         private long mStartTime;
@@ -136,6 +141,13 @@ public class BarTransitions {
             }
             mGradient = res.getDrawable(gradientResourceId);
             mInterpolator = new LinearInterpolator();
+            mGradientResourceId = gradientResourceId;
+        }
+
+        public void updateResources(Resources res)  {
+            mOpaque = res.getColor(R.color.system_bar_background_opaque);
+            mSemiTransparent = res.getColor(R.color.system_bar_background_semi_transparent);
+            mGradient = res.getDrawable(mGradientResourceId);
         }
 
         @Override
