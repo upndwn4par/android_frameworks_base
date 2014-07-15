@@ -492,7 +492,16 @@ public class WallpaperCropActivity extends Activity {
             } else {
                 Utils.closeSilently(mInStream);
                 try {
-                    if (mInUri != null) {
+                    if (mImageFromAsset) {
+                        AssetManager am = mResources.getAssets();
+                        String[] pathImages = am.list(mInFilePath);
+                        String pathImage = Utilities.getFirstNonEmptyString(pathImages);
+                        if (pathImage == null) {
+                            throw new IOException("did not find any images in path: " + mInFilePath);
+                        }
+                        InputStream is = am.open(mInFilePath + File.separator + pathImage);
+                        mInStream = new BufferedInputStream(is);
+                    } else if (mInUri != null) {
                         mInStream = new BufferedInputStream(
                                 mContext.getContentResolver().openInputStream(mInUri));
                     } else if (mInFilePath != null) {

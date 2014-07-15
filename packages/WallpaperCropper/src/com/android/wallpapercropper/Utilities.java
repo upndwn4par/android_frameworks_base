@@ -23,7 +23,11 @@ import android.graphics.Rect;
 import android.util.Log;
 import android.widget.Toast;
 
-final class Utilities {
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+public final class Utilities {
     private static final String TAG = "WallpaperCropper.Utilities";
 
     public static void scaleRect(Rect r, float scale) {
@@ -55,5 +59,17 @@ final class Utilities {
                     ". Make sure to create a MAIN intent-filter for the corresponding activity " +
                     "or use the exported attribute for this activity.", e);
         }
+    }
+
+    public static String getFirstNonEmptyString(String[] strings) {
+        if (strings == null) return null;
+        String firstNonEmptyString = null;
+        for(String astring : strings) {
+            if (!astring.isEmpty()) {
+                firstNonEmptyString = astring;
+                break;
+            }
+        }
+        return firstNonEmptyString;
     }
 }
