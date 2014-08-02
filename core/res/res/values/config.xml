@@ -1316,12 +1316,4 @@
          2 - The device DOES NOT have a permanent menu key; ignore autodetection. -->
     <integer name="config_overrideHasPermanentMenuKey">0</integer>
 
-    <!-- Graviton -->
-
-    <!-- Back kill timeout delay -->
-    <integer name="config_backKillTimeout">1000</integer>
-
-    <!-- True will enable the screen-off animation. -->
-    <bool name="config_screenOffAnimation">true</bool>
-
 </resources>
