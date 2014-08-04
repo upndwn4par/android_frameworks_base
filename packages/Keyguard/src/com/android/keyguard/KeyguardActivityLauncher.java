@@ -128,9 +128,8 @@ public abstract class KeyguardActivityLauncher {
 
         pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         pickIntent.putExtra(AppWidgetManager.EXTRA_CUSTOM_SORT, false);
-        if (Settings.Secure.getIntForUser(getContext().getContentResolver(),
-                Settings.Secure.ALLOW_ALL_LOCKSCREEN_WIDGETS,
-                0, UserHandle.USER_CURRENT) != 1) {
+        if (Settings.System.getIntForUser(getContext().getContentResolver(),
+                Settings.System.ALLOW_ALL_LOCKSCREEN_WIDGETS, 0, UserHandle.USER_CURRENT) != 1) {
             pickIntent.putExtra(AppWidgetManager.EXTRA_CATEGORY_FILTER,
                     AppWidgetProviderInfo.WIDGET_CATEGORY_KEYGUARD);
         } else {

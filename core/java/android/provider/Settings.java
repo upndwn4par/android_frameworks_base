@@ -2870,6 +2870,12 @@ public final class Settings {
          */
         public static final String HOVER_STATE = "hover_state";
 
+	/**
+	 * Allow all (non keyguard specific) widgets to be added to the lockscreen
+	 * @hide
+	 */
+	public static final String ALLOW_ALL_LOCKSCREEN_WIDGETS = "allow_all_lockscreen_widgets";
+
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
@@ -3895,13 +3901,6 @@ public final class Settings {
          * @deprecated
          */
         public static final String LOCK_SCREEN_OWNER_INFO = "lock_screen_owner_info";
-
-        /**
-         * Allow all (non keyguard specific) widgets to be added to the lockscreen
-         * @hide
-         */
-        public static final String ALLOW_ALL_LOCKSCREEN_WIDGETS =
-            "allow_all_lockscreen_widgets";
 
         /**
          * Ids of the user-selected appwidgets on the lockscreen (comma-delimited).
