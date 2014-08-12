@@ -20,9 +20,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.KeyguardManager;
 import android.content.Context;
+import android.content.ContentResolver;
 import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.PowerManager;
+import android.os.UserHandle;
 import android.provider.Settings;
 import android.service.notification.StatusBarNotification;
 import android.telephony.TelephonyManager;
@@ -348,6 +350,16 @@ public class Hover {
         hideCurrentNotification(instant, quit);
     }
 
+    // Disable Hover on lockscreen toggle
+    public boolean isKeyguardShowing() {
+        return mKeyguardManager.isKeyguardLocked();
+    }
+
+    public boolean disableOnLockScreen() {
+	return Settings.System.getIntForUser(mContext.getContentResolver(),
+		Settings.System.HOVER_DISABLE_ON_LOCKSCREEN, 0, UserHandle.USER_CURRENT) != 1;
+    }
+
     public void showCurrentNotification() {
         clearForegroundAppNotifications();
 
@@ -612,7 +624,10 @@ public class Hover {
         }
 
         // second, if we've just expanded statusbar or turned screen off return
-        if (!isScreenOn() | isStatusBarExpanded() | isKeyguardSecureShowing()) {
+        if (!isScreenOn() | isStatusBarExpanded() | isKeyguardSecureShowing() |
+	        // Disable Hover on lockscreen toggle
+		(!disableOnLockScreen() && isKeyguardShowing())) {
+
             if (mShowing) {
                 dismissHover(true, true);
             } else {

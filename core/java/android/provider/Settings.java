@@ -2870,6 +2870,14 @@ public final class Settings {
          */
         public static final String HOVER_STATE = "hover_state";
 
+        /**
+         * Hover disable on lockscreen, default is 0 (off).
+         * 0 = disabled
+         * 1 = enabled
+         * @hide
+         */
+        public static final String HOVER_DISABLE_ON_LOCKSCREEN = "hover_disable_on_lockscreen";
+
 	/**
 	 * Allow all (non keyguard specific) widgets to be added to the lockscreen
 	 * @hide
