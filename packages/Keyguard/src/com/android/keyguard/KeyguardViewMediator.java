@@ -1203,6 +1203,9 @@ public class KeyguardViewMediator {
             // If the stream is muted, don't play the sound
             if (mAudioManager.isStreamMute(mMasterStreamType)) return;
 
+	    // Disable screen lock/unlock sound if music is playing
+	    if (mAudioManager.isMusicActive()) return;
+
             mLockSoundStreamId = mLockSounds.play(whichSound,
                     mLockSoundVolume, mLockSoundVolume, 1/*priortiy*/, 0/*loop*/, 1.0f/*rate*/);
         }
