@@ -87,6 +87,7 @@ import com.android.systemui.statusbar.policy.BluetoothController;
 import com.android.systemui.statusbar.policy.LocationController;
 import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.policy.RotationLockController;
+import com.android.internal.util.slim.QuietHoursHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -114,7 +115,7 @@ class QuickSettings {
         IMMERSIVE,
         LOCATION,
         AIRPLANE,
-        QUITEHOUR,
+        QUIETHOUR,
         SLEEP,
         SYNC,
         USBMODE,
@@ -127,7 +128,7 @@ class QuickSettings {
         + DELIMITER + Tile.SETTINGS + DELIMITER + Tile.WIFI + DELIMITER + Tile.TORCH
         + DELIMITER + Tile.RSSI + DELIMITER + Tile.BLUETOOTH + DELIMITER + Tile.VOLUME
         + DELIMITER + Tile.BATTERY + DELIMITER + Tile.ROTATION+ DELIMITER + Tile.IMMERSIVE
-        + DELIMITER + Tile.LOCATION + DELIMITER + Tile.AIRPLANE + DELIMITER + Tile.QUITEHOUR
+        + DELIMITER + Tile.LOCATION + DELIMITER + Tile.AIRPLANE + DELIMITER + Tile.QUIETHOUR
         + DELIMITER + Tile.USBMODE + DELIMITER + Tile.SLEEP + DELIMITER + Tile.SYNC
         + DELIMITER + Tile.NFC;
 
@@ -193,6 +194,9 @@ class QuickSettings {
 
     public void setService(PhoneStatusBar phoneStatusBar) {
         mStatusBarService = phoneStatusBar;
+        if (mModel != null) {
+            mModel.setService(phoneStatusBar);
+        }
     }
 
     public PhoneStatusBar getService() {
@@ -298,7 +302,9 @@ class QuickSettings {
             @Override
             protected void onPostExecute(Pair<String, Drawable> result) {
                 super.onPostExecute(result);
-                mModel.setUserTileInfo(result.first, result.second);
+                if (mModel != null) {
+                    mModel.setUserTileInfo(result.first, result.second);
+                }
                 mUserInfoTask = null;
             }
         };
@@ -821,14 +827,15 @@ class QuickSettings {
                   });
                   parent.addView(SyncTile);
                   if (addMissing) SyncTile.setVisibility(View.GONE);
-               } else if (Tile.QUITEHOUR.toString().equals(tile.toString())) { // Quite hours tile
-                  // Quite hours mode
-                  final QuickSettingsBasicTile quiteHourTile
+               } else if (Tile.QUIETHOUR.toString().equals(tile.toString())) { // Quiet hours tile
+                  // Quiet hours mode
+                  final QuickSettingsBasicTile quietHourTile
                        = new QuickSettingsBasicTile(mContext);
-                  quiteHourTile.setTileId(Tile.QUITEHOUR);
-                  quiteHourTile.setImageResource(R.drawable.ic_qs_quiet_hours_off);
-                  quiteHourTile.setTextResource(R.string.quick_settings_quiethours_off_label);
-                  quiteHourTile.setOnClickListener(new View.OnClickListener() {
+
+                  quietHourTile.setTileId(Tile.QUIETHOUR);
+                  quietHourTile.setImageResource(R.drawable.ic_qs_quiet_hours_off);
+                  quietHourTile.setTextResource(R.string.quick_settings_quiethours_off_label);
+                  quietHourTile.setOnClickListener(new View.OnClickListener() {
                        @Override
                        public void onClick(View v) {
                            boolean checkModeOn = Settings.System.getInt(mContext
@@ -840,7 +847,7 @@ class QuickSettings {
                            mContext.sendBroadcast(scheduleSms);
                       }
                   });
-                  quiteHourTile.setOnLongClickListener(new View.OnLongClickListener() {
+                  quietHourTile.setOnLongClickListener(new View.OnLongClickListener() {
                       @Override
                       public boolean onLongClick(View v) {
                            Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -850,10 +857,11 @@ class QuickSettings {
                            return true;
                       }
                   });
-                  mModel.addQuiteHourTile(quiteHourTile,
-                        new QuickSettingsModel.BasicRefreshCallback(quiteHourTile));
-                  parent.addView(quiteHourTile);
-                  if (addMissing) quiteHourTile.setVisibility(View.GONE);
+
+                  mModel.addQuietHourTile(quietHourTile,
+                        new QuickSettingsModel.BasicRefreshCallback(quietHourTile));
+                  parent.addView(quietHourTile);
+                  if (addMissing) quietHourTile.setVisibility(View.GONE);
                } else if (Tile.VOLUME.toString().equals(tile.toString())) { // Volume tile
                   // Volume mode
                   final QuickSettingsFlipTile VolumeTile
