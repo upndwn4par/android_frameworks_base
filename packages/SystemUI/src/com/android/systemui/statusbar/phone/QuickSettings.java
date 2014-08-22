@@ -74,6 +74,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.internal.app.MediaRouteDialogPresenter;
+import com.android.internal.util.graviton.DeviceUtils;
 import com.android.internal.util.omni.OmniTorchConstants;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.phone.QuickSettingsModel.ActivityState;
@@ -540,7 +541,7 @@ class QuickSettings {
                   wifiTile.setBackOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (cm.getTetherableWifiRegexs().length != 0) {
+                            if (DeviceUtils.deviceSupportsWifiAp(mContext)) {
                                 Intent intent = new Intent();
                                 intent.setComponent(new ComponentName(
                                       "com.android.settings",
@@ -566,7 +567,7 @@ class QuickSettings {
                   parent.addView(wifiTile);
                   if (addMissing) wifiTile.setVisibility(View.GONE);
                } else if (Tile.RSSI.toString().equals(tile.toString())) { // rssi tile
-                  if (mModel.deviceHasMobileData()) {
+                  if (DeviceUtils.deviceSupportsMobileData(mContext)) {
                       // RSSI
                       final QuickSettingsNetworkFlipTile rssiTile
                                   = new QuickSettingsNetworkFlipTile(mContext);
@@ -754,6 +755,7 @@ class QuickSettings {
                   if (addMissing) airplaneTile.setVisibility(View.GONE);
                } else if (Tile.USBMODE.toString().equals(tile.toString())) { // usb tile
                   // Usb Mode
+                  if (DeviceUtils.deviceSupportsUsbTether(mContext)) {
                   final QuickSettingsBasicTile usbModeTile
                         = new QuickSettingsBasicTile(mContext);
                   usbModeTile.setTileId(Tile.USBMODE);
@@ -781,6 +783,7 @@ class QuickSettings {
                   });
                   parent.addView(usbModeTile);
                   if (addMissing) usbModeTile.setVisibility(View.GONE);
+                  }
                } else if (Tile.TORCH.toString().equals(tile.toString())) { // torch tile
                   // Torch
                   final QuickSettingsBasicTile torchTile
@@ -929,8 +932,7 @@ class QuickSettings {
                   if (addMissing) SleepTile.setVisibility(View.GONE);
                } else if (Tile.BLUETOOTH.toString().equals(tile.toString())) { // Bluetooth
                   // Bluetooth
-                  if (mModel.deviceSupportsBluetooth()
-                      || DEBUG_GONE_TILES) {
+                  if (DeviceUtils.deviceSupportsBluetooth() || DEBUG_GONE_TILES) {
                       final QuickSettingsFlipTile bluetoothTile
                             = new QuickSettingsFlipTile(mContext);
 
@@ -1025,7 +1027,7 @@ class QuickSettings {
                   }
                } else if (Tile.NFC.toString().equals(tile.toString())) { // NFC tile
                   // NFC
-                  if(mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_NFC)) {
+                  if (DeviceUtils.deviceSupportsNfc(mContext)) {
                       final QuickSettingsBasicTile nfcTile = new QuickSettingsBasicTile(mContext);
 
                       nfcTile.setTileId(Tile.NFC);
@@ -1057,6 +1059,7 @@ class QuickSettings {
                   }
                } else if (Tile.LOCATION.toString().equals(tile.toString())) { // Location
                  // Location
+                 if (DeviceUtils.deviceSupportsGps(mContext)) {
                  final QuickSettingsFlipTile locationTile
                        = new QuickSettingsFlipTile(mContext);
                  locationTile.setTileId(Tile.LOCATION);
@@ -1125,6 +1128,7 @@ class QuickSettings {
                   });
                   parent.addView(locationTile);
                   if (addMissing) locationTile.setVisibility(View.GONE);
+                  }
                }
             }
         }
