@@ -365,12 +365,6 @@
     <!-- label for item that turns off power in phone options dialog -->
     <string name="global_action_power_off">Power off</string>
 
-    <!-- label for item that takes screenshot in the phone options dialog -->
-    <string name="global_action_screenshot">Screenshot</string>
-
-    <!-- label for item that takes screenrecord in the phone options dialog -->
-    <string name="global_action_screenrecord">Screen Record</string>
-
     <!-- label for item that generates a bug report in the phone options dialog -->
     <string name="global_action_bug_report">Bug report</string>
 
@@ -1990,11 +1984,6 @@
     <string name="permlab_accessNetworkConditions">listen for observations on network conditions</string>
     <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permdesc_accessNetworkConditions">Allows an application to listen for observations on network conditions. Should never be needed for normal apps.</string>
-
-    <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
-    <string name="permlab_accessThemeService">access theme service</string>
-    <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
-    <string name="permdesc_accessThemeService">Allows an application to access the theme service. Should never be needed for normal apps.</string>
 
     <!-- Policy administration -->
 
