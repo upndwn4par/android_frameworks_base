@@ -507,7 +507,7 @@ public class ThemeService extends IThemeService.Stub {
                         in = ThemeUtils.getInputStreamFromAsset(themeCtx, "file:///android_asset/"
                                 + wpPath);
                     }
-                    WallpaperManager.getInstance(mContext).setStream(in);
+                    wm.setStream(in);
                 } else {
                     PackageManager pm = mContext.getPackageManager();
                     PackageInfo pi = pm.getPackageInfo(pkgName, 0);
