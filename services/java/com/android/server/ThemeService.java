@@ -470,10 +470,10 @@ public class ThemeService extends IThemeService.Stub {
                 null, selection,
                 selectionArgs, null);
         c.moveToFirst();
-
+        WallpaperManager wm = WallpaperManager.getInstance(mContext);
         if (HOLO_DEFAULT.equals(pkgName)) {
             try {
-                WallpaperManager.getInstance(mContext).clear();
+                wm.getInstance(mContext).clear();
             } catch (IOException e) {
                 return false;
             }
