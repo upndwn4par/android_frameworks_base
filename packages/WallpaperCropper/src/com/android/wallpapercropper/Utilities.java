@@ -18,7 +18,15 @@ package com.android.wallpapercropper;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
 import android.widget.Toast;
@@ -61,6 +69,65 @@ public final class Utilities {
         }
     }
 
+    public static Bitmap getThemeWallpaper(Context context, String path, String pkgName,
+            boolean legacyTheme, boolean thumb) {
+        if (legacyTheme) {
+            return getLegacyThemeWallpaper(context, pkgName, thumb);
+        }
+        InputStream is = null;
+        try {
+            Resources res = context.getPackageManager().getResourcesForApplication(pkgName);
+            if (res == null) {
+                return null;
+            }
+
+            AssetManager am = res.getAssets();
+            String[] wallpapers = am.list(path);
+            String wallpaper = getFirstNonEmptyString(wallpapers);
+            if (wallpaper == null) {
+                return null;
+            }
+
+
+            is = am.open(path + File.separator + wallpaper);
+
+            BitmapFactory.Options bounds = new BitmapFactory.Options();
+            bounds.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(is, null, bounds);
+            if ((bounds.outWidth == -1) || (bounds.outHeight == -1))
+                return null;
+
+            int originalSize = (bounds.outHeight > bounds.outWidth) ? bounds.outHeight
+                    : bounds.outWidth;
+            Point outSize;
+
+            if (thumb) {
+                outSize = getDefaultThumbnailSize(context.getResources());
+            } else {
+                outSize = WallpaperCropActivity.getDefaultWallpaperSize(res,
+                        ((Activity) context).getWindowManager());
+            }
+            int thumbSampleSize = (outSize.y > outSize.x) ? outSize.y : outSize.x;
+
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inSampleSize = originalSize / thumbSampleSize;
+            return BitmapFactory.decodeStream(is, null, opts);
+        } catch (IOException e) {
+            return null;
+        } catch (PackageManager.NameNotFoundException e) {
+            return null;
+        } catch (OutOfMemoryError e) {
+            return null;
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+    }
+
     public static String getFirstNonEmptyString(String[] strings) {
         if (strings == null) return null;
         String firstNonEmptyString = null;
@@ -71,5 +138,50 @@ public final class Utilities {
             }
         }
         return firstNonEmptyString;
+    }
+
+    public static Bitmap getLegacyThemeWallpaper(Context context, String pkgName, boolean thumb) {
+        try {
+            final PackageManager pm = context.getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(pkgName, 0);
+            Resources res = context.getPackageManager().getResourcesForApplication(pkgName);
+
+            if (pi == null || res == null) {
+                return null;
+            }
+            int resId = pi.legacyThemeInfos[0].wallpaperResourceId;
+
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inJustDecodeBounds = true;
+            BitmapFactory.decodeResource(res, resId, opts);
+            if ((opts.outWidth == -1) || (opts.outHeight == -1))
+                return null;
+
+            int originalSize = (opts.outHeight > opts.outWidth) ? opts.outHeight
+                    : opts.outWidth;
+            Point outSize;
+            if (thumb) {
+                outSize = getDefaultThumbnailSize(context.getResources());
+            } else {
+                outSize = WallpaperCropActivity.getDefaultWallpaperSize(res, (
+                        (Activity) context).getWindowManager());
+            }
+            int thumbSampleSize = (outSize.y > outSize.x) ? outSize.y : outSize.x;
+
+            opts.inJustDecodeBounds = false;
+            opts.inSampleSize = originalSize / thumbSampleSize;
+
+            return BitmapFactory.decodeResource(res, resId, opts);
+        } catch (PackageManager.NameNotFoundException e) {
+            return null;
+        } catch (OutOfMemoryError e1) {
+            return null;
+        }
+    }
+
+    public static Point getDefaultThumbnailSize(Resources res) {
+        return new Point(res.getDimensionPixelSize(R.dimen.wallpaperThumbnailWidth),
+                res.getDimensionPixelSize(R.dimen.wallpaperThumbnailHeight));
+
     }
 }
