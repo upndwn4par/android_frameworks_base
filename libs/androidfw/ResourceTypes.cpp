@@ -630,12 +630,12 @@ const uint16_t* ResStringPool::stringAt(size_t idx, size_t* u16len) const
                     AutoMutex lock(mDecodeLock);
 
                     if (mCache == NULL) {
-#ifdef HAVE_ANDROID_OS
+#ifndef HAVE_ANDROID_OS
                         STRING_POOL_NOISY(ALOGI("CREATING STRING CACHE OF %d bytes",
                                 mHeader->stringCount*sizeof(char16_t**)));
 #else
                         // We do not want to be in this case when actually running Android.
-                        ALOGW("CREATING STRING CACHE OF %d bytes",
+                        ALOGV("CREATING STRING CACHE OF %d bytes",
                                 mHeader->stringCount*sizeof(char16_t**));
 #endif
                         mCache = (char16_t**)calloc(mHeader->stringCount, sizeof(char16_t**));
@@ -3780,7 +3780,6 @@ ssize_t ResTable::getBagLocked(uint32_t resID, const bag_entry** outBag,
                 if ((!isInside) || oldName != newName) {
                     // This is a new attribute...  figure out what to do with it.
                     // Need to alloc more memory...
-                    size_t prevEntry = curEntry;
                     curEntry = set->availAttrs;
                     set->availAttrs++;
                     const size_t newAvail = set->availAttrs;
@@ -3795,8 +3794,8 @@ ssize_t ResTable::getBagLocked(uint32_t resID, const bag_entry** outBag,
                                  set, entries, set->availAttrs));
                     if (isInside) {
                         // Going in the middle, need to make space.
-                        memmove(entries+prevEntry+1, entries+prevEntry,
-                                sizeof(bag_entry)*(set->numAttrs-prevEntry));
+                        memmove(entries+curEntry+1, entries+curEntry,
+                                sizeof(bag_entry)*(set->numAttrs-curEntry));
                     }
                     TABLE_NOISY(printf("#%d: Inserting new attribute: 0x%08x\n",
                                  curEntry, newName));
@@ -5724,18 +5723,6 @@ bool ResTable::getIdmapInfo(const void* idmap, size_t sizeBytes,
 void ResTable::removeAssetsByCookie(const String8 &packageName, void* cookie)
 {
     mError = NO_ERROR;
-    ALOGV("Removing cookie %d for package %s", cookie, packageName.string());
-    size_t N = mHeaders.size();
-    for (size_t i = 0; i < N; i++) {
-        Header* header = mHeaders[i];
-        if ((size_t)header->cookie == (size_t)cookie) {
-            if (header->ownedData != NULL) {
-                free(header->ownedData);
-            }
-            mHeaders.removeAt(i);
-            break;
-        }
-    }
     size_t pgCount = mPackageGroups.size();
     for (size_t pgIndex = 0; pgIndex < pgCount; pgIndex++) {
         PackageGroup* pg = mPackageGroups[pgIndex];
@@ -5784,11 +5771,24 @@ void ResTable::removeAssetsByCookie(const String8 &packageName, void* cookie)
                 pg->packages.removeAt(index);
                 delete pkg;
             }
-            return;
+            break;
         } else {
           ALOGV("idx > pkgCount");
         }
     }
+    ALOGV("Removing cookie %d for package %s", cookie, packageName.string());
+    size_t N = mHeaders.size();
+    for (size_t i = 0; i < N; i++) {
+        Header* header = mHeaders[i];
+        if ((size_t)header->cookie == (size_t)cookie) {
+            if (header->ownedData != NULL) {
+                free(header->ownedData);
+            }
+            mHeaders.removeAt(i);
+            break;
+        }
+    }
+
 }
 
 bool ResTable::isResTypeAllowed(const char* type) const

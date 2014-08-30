@@ -39,6 +39,7 @@ import android.content.res.IThemeChangeListener;
 import android.content.res.IThemeService;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Binder;
@@ -458,11 +459,6 @@ public class ThemeService extends IThemeService.Stub {
         return true;
     }
 
-    private void updateLockscreen() {
-        // TODO: implement actual behavior
-        sleepQuiet(100);
-    }
-
     private boolean updateWallpaper(String pkgName) {
         String selection = ThemesContract.ThemesColumns.PKG_NAME + "= ?";
         String[] selectionArgs = { pkgName };
@@ -623,14 +619,6 @@ public class ThemeService extends IThemeService.Stub {
                             e);
                 }
             }
-        }
-    }
-
-    private void sleepQuiet(long ms) {
-        try {
-            Thread.sleep(ms);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 
