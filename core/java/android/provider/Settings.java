@@ -3184,6 +3184,7 @@ public final class Settings {
         public static final String EGG_MODE = "egg_mode";
 
         /**
+<<<<<<< HEAD
          * Display style of the status bar battery information
          * 0: Display the battery an icon in portrait mode
          * 2: Display the battery as a circle
@@ -3262,6 +3263,12 @@ public final class Settings {
          * @hide
          */
         public static final String NAVIGATION_BAR_WIDTH = "navigation_bar_width";
+
+        /**
+	 * Whether to allow killing of the foreground app by long-pressing the Back button
+	 * @hide
+	 */
+	public static final String KILL_APP_LONGPRESS_BACK = "kill_app_longpress_back";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
