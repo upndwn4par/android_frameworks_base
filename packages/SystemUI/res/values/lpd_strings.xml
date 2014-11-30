@@ -23,4 +23,13 @@
          all of the currently visible notifications. [CHAR LIMIT=10]-->
     <string name="clear_recents">Close all recent</string>
 
+    <!-- Content description of the mobile data tile in quick settings when off (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_data_off">Mobile data off.</string>
+
+    <!-- Content description of the mobile data tile in quick settings when on (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_data_on">Mobile data on.</string>
+
+    <!-- QuickSettings: Mobile data [CHAR LIMIT=NONE] -->
+    <string name="quick_settings_mobile_data_label">Mobile data</string>
+
 </resources> 
