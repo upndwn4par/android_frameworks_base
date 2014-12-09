@@ -46,5 +46,5 @@
         android:layout_gravity="center_vertical"
         android:textColor="#ffffff"
         android:textSize="@dimen/battery_level_text_size"
-        android:layout_marginStart="7dp"/>
+        android:layout_marginStart="3dp"/>
 </LinearLayout>
