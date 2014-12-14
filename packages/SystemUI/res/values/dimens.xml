@@ -427,10 +427,10 @@
     <dimen name="keyguard_carrier_text_margin">16dp</dimen>
 
     <!-- Margin on the left side of the battery % in the header. -->
-    <dimen name="header_battery_margin_expanded">6dp</dimen>
+    <dimen name="header_battery_margin_expanded">3dp</dimen>
 
     <!-- Margin on the left side of the battery % when on Keyguard. -->
-    <dimen name="header_battery_margin_keyguard">6dp</dimen>
+    <dimen name="header_battery_margin_keyguard">3dp</dimen>
 
     <!-- Margin on the right side of the system icon group on Keyguard. -->
     <dimen name="system_icons_keyguard_padding_end">4dp</dimen>
@@ -468,7 +468,7 @@
     <dimen name="keyguard_indication_margin_bottom">65dp</dimen>
 
     <!-- The text size for battery level -->
-    <dimen name="battery_level_text_size">12sp</dimen>
+    <dimen name="battery_level_text_size">14sp</dimen>
 
     <!-- TrustDrawable: Minimum inner radius of the breathing animation -->
     <dimen name="trust_circle_inner_radius_visible_min">22dp</dimen>

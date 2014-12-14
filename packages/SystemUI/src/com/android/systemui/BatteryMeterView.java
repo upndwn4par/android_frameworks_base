@@ -48,7 +48,7 @@ public class BatteryMeterView extends View implements DemoMode,
     private static final boolean SINGLE_DIGIT_PERCENT = false;
     private static final boolean SHOW_100_PERCENT = false;
 
-    private static final int FULL = 96;
+    private static final int FULL = 99;
 
     private static final float BOLT_LEVEL_THRESHOLD = 0.3f;  // opaque bolt below this fraction
 
