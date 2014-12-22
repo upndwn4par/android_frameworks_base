@@ -105,8 +105,8 @@ public class KeyguardStatusBarView extends RelativeLayout
         mCarrierLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 getResources().getDimensionPixelSize(
                         com.android.internal.R.dimen.text_size_small_material));
-        //mBatteryLevel.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-        //        getResources().getDimensionPixelSize(R.dimen.battery_level_text_size));
+        mBatteryLevel.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                getResources().getDimensionPixelSize(R.dimen.battery_level_text_size));
     }
 
     private void loadDimens() {
@@ -172,7 +172,7 @@ public class KeyguardStatusBarView extends RelativeLayout
 
     @Override
     public void onBatteryLevelChanged(int level, boolean pluggedIn, boolean charging) {
-        //mBatteryLevel.setText(getResources().getString(R.string.battery_level_template, level));
+        mBatteryLevel.setText(getResources().getString(R.string.battery_level_template, level));
         boolean changed = mBatteryCharging != charging;
         mBatteryCharging = charging;
         if (changed) {
