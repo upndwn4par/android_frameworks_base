@@ -50,7 +50,6 @@ import com.android.systemui.volume.ZenModePanel;
 
 /** Quick settings tile: Notifications **/
 public class NotificationsTile extends QSTile<NotificationsTile.NotificationsState> {
-    private static final Intent NOTIFICATION_SETTINGS = new Intent(Settings.ACTION_NOTIFICATION_SETTINGS);
     private final ZenModeController mZenController;
     private final AudioManager mAudioManager;
 
@@ -93,7 +92,11 @@ public class NotificationsTile extends QSTile<NotificationsTile.NotificationsSta
 
     @Override
     protected void handleLongClick() {
-	mHost.startSettingsActivity(NOTIFICATION_SETTINGS);
+	//Use Priority Notifications mode instead?
+	//mAudioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+
+	//No Interuptions mode
+	mZenController.setZen(Global.ZEN_MODE_NO_INTERRUPTIONS);
     }
 
     @Override
