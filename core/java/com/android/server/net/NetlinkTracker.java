@@ -71,7 +71,7 @@ public class NetlinkTracker extends BaseNetworkObserver {
     private final String TAG;
 
     public interface Callback {
-        public void update(LinkProperties lp);
+        public void update();
     }
 
     private final String mInterfaceName;
@@ -112,7 +112,7 @@ public class NetlinkTracker extends BaseNetworkObserver {
                 changed = mLinkProperties.addLinkAddress(address);
             }
             if (changed) {
-                mCallback.update(new LinkProperties(mLinkProperties));
+                mCallback.update();
             }
         }
     }
@@ -126,7 +126,7 @@ public class NetlinkTracker extends BaseNetworkObserver {
                 changed = mLinkProperties.removeLinkAddress(address);
             }
             if (changed) {
-                mCallback.update(new LinkProperties(mLinkProperties));
+                mCallback.update();
             }
         }
     }
@@ -140,7 +140,7 @@ public class NetlinkTracker extends BaseNetworkObserver {
                 changed = mLinkProperties.addRoute(route);
             }
             if (changed) {
-                mCallback.update(new LinkProperties(mLinkProperties));
+                mCallback.update();
             }
         }
     }
@@ -154,7 +154,7 @@ public class NetlinkTracker extends BaseNetworkObserver {
                 changed = mLinkProperties.removeRoute(route);
             }
             if (changed) {
-                mCallback.update(new LinkProperties(mLinkProperties));
+                mCallback.update();
             }
         }
     }
@@ -168,7 +168,7 @@ public class NetlinkTracker extends BaseNetworkObserver {
                 synchronized (this) {
                     mDnsServerRepository.setDnsServersOn(mLinkProperties);
                 }
-                mCallback.update(new LinkProperties(mLinkProperties));
+                mCallback.update();
             }
         }
     }
