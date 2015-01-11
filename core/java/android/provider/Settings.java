@@ -2848,6 +2848,10 @@ public final class Settings {
         public static final String STATUSBAR_CLOCK_COLOR = "statusbar_clock_color";
 
         /**
+	 * Shows custom date before clock time
+	 * 0 - No Date
+	 * 1 - Small Date
+	 * 2 - Normal Date
          * @hide
          */
         public static final String STATUSBAR_CLOCK_DATE_DISPLAY = "statusbar_clock_date_display";
