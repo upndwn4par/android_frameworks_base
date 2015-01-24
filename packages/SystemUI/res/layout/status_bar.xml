@@ -125,6 +125,7 @@
         android:layout_height="match_parent"
         >
 
+<<<<<<< HEAD
         <TextView
             android:id="@+id/center_clock"
             android:textAppearance="@style/TextAppearance.StatusBar.Clock"
@@ -133,6 +134,16 @@
             android:singleLine="true"
             android:gravity="center"
             android:visibility="gone"
+=======
+        <com.android.systemui.statusbar.policy.ClockCenter
+            android:id="@+id/center_clock"
+            android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:singleLine="true"
+>>>>>>> lpcm1
             />
     </com.android.keyguard.AlphaOptimizedLinearLayout>
 

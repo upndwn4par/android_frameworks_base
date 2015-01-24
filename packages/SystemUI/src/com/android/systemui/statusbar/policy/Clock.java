@@ -21,15 +21,28 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+<<<<<<< HEAD
 import android.database.ContentObserver;
 import android.os.Bundle;
 import android.os.Handler;
+=======
+import android.content.res.TypedArray;
+import android.database.ContentObserver;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.UserHandle;
+>>>>>>> lpcm1
 import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.format.DateFormat;
 import android.text.style.CharacterStyle;
 import android.text.style.RelativeSizeSpan;
+<<<<<<< HEAD
+=======
+import android.util.AttributeSet;
+import android.view.View;
+>>>>>>> lpcm1
 import android.widget.TextView;
 
 import com.android.systemui.DemoMode;
@@ -37,6 +50,7 @@ import com.android.systemui.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -45,16 +59,87 @@ import libcore.icu.LocaleData;
 /**
  * Digital clock for the status bar.
  */
+<<<<<<< HEAD
 public class Clock implements DemoMode {
+=======
+public class Clock extends TextView implements DemoMode {
+    protected boolean mAttached;
+    protected Calendar mCalendar;
+    protected String mClockFormatString;
+    protected SimpleDateFormat mClockFormat;
+    protected Locale mLocale;
+>>>>>>> lpcm1
 
-    private static final int AM_PM_STYLE_NORMAL  = 0;
-    private static final int AM_PM_STYLE_SMALL   = 1;
-    private static final int AM_PM_STYLE_GONE    = 2;
 
+<<<<<<< HEAD
     public static final int STYLE_HIDE_CLOCK    = 0;
     public static final int STYLE_CLOCK_RIGHT   = 1;
     public static final int STYLE_CLOCK_CENTER  = 2;
     public static final int STYLE_CLOCK_LEFT    = 3;
+=======
+    public static final int AM_PM_STYLE_GONE    = 0;
+    public static final int AM_PM_STYLE_SMALL   = 1;
+    public static final int AM_PM_STYLE_NORMAL  = 2;
+
+    private static int AM_PM_STYLE = AM_PM_STYLE_GONE;
+
+    public static final int CLOCK_DATE_DISPLAY_GONE = 0;
+    public static final int CLOCK_DATE_DISPLAY_SMALL = 1;
+    public static final int CLOCK_DATE_DISPLAY_NORMAL = 2;
+
+    public static final int CLOCK_DATE_STYLE_REGULAR = 0;
+    public static final int CLOCK_DATE_STYLE_LOWERCASE = 1;
+    public static final int CLOCK_DATE_STYLE_UPPERCASE = 2;
+
+    public static final int STYLE_CLOCK_RIGHT   = 0;
+    public static final int STYLE_CLOCK_CENTER  = 1;
+
+    protected int mClockDateDisplay = CLOCK_DATE_DISPLAY_GONE;
+    protected int mClockDateStyle = CLOCK_DATE_STYLE_REGULAR;
+    protected int mClockStyle = STYLE_CLOCK_RIGHT;
+    protected boolean mShowClock;
+
+    private int mAmPmStyle;
+
+    private SettingsObserver mSettingsObserver;
+
+    protected class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.STATUS_BAR_CLOCK),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.STATUSBAR_CLOCK_AM_PM_STYLE),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.STATUSBAR_CLOCK_STYLE), false,
+                    this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.STATUSBAR_CLOCK_COLOR), false,
+                    this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.STATUSBAR_CLOCK_DATE_DISPLAY), false,
+                    this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.STATUSBAR_CLOCK_DATE_STYLE), false,
+                    this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.STATUSBAR_CLOCK_DATE_FORMAT), false,
+                    this, UserHandle.USER_ALL);
+            updateSettings();
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            updateSettings();
+        }
+    }
+>>>>>>> lpcm1
 
     private static final char MAGIC1 = '\uEF00';
     private static final char MAGIC2 = '\uEF01';
@@ -116,12 +201,29 @@ public class Clock implements DemoMode {
         // The time zone may have changed while the receiver wasn't registered, so update the Time
         mCalendar = Calendar.getInstance(TimeZone.getDefault());
 
+<<<<<<< HEAD
         // Make sure we update to the current time
         if (settingsObserver == null) {
             settingsObserver = new SettingsObserver(new Handler());
             settingsObserver.observe();
         } else {
             updateClock();
+=======
+        if (mSettingsObserver == null) {
+            mSettingsObserver = new SettingsObserver(new Handler());
+        }
+        mSettingsObserver.observe();
+        updateSettings();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (mAttached) {
+            getContext().unregisterReceiver(mIntentReceiver);
+            getContext().getContentResolver().unregisterContentObserver(mSettingsObserver);
+            mAttached = false;
+>>>>>>> lpcm1
         }
     }
 
@@ -139,8 +241,9 @@ public class Clock implements DemoMode {
                 final Locale newLocale = mContext.getResources().getConfiguration().locale;
                 if (! newLocale.equals(mLocale)) {
                     mLocale = newLocale;
-                    mClockFormatString = ""; // force refresh
                 }
+                updateSettings();
+                return;
             }
             updateClock();
         }
@@ -191,13 +294,39 @@ public class Clock implements DemoMode {
         } else {
             sdf = mClockFormat;
         }
+
+        CharSequence dateString = null;
+
         String result = sdf.format(mCalendar.getTime());
+
+        if (mClockDateDisplay != CLOCK_DATE_DISPLAY_GONE) {
+            Date now = new Date();
+
+            String clockDateFormat = Settings.System.getString(getContext().getContentResolver(),
+                    Settings.System.STATUSBAR_CLOCK_DATE_FORMAT);
+
+            if (clockDateFormat == null || clockDateFormat.isEmpty()) {
+                // Set dateString to short uppercase Weekday (Default for AOKP) if empty
+                dateString = DateFormat.format("EEE", now) + " ";
+            } else {
+                dateString = DateFormat.format(clockDateFormat, now) + " ";
+            }
+            if (mClockDateStyle == CLOCK_DATE_STYLE_LOWERCASE) {
+                // When Date style is small, convert date to uppercase
+                result = dateString.toString().toLowerCase() + result;
+            } else if (mClockDateStyle == CLOCK_DATE_STYLE_UPPERCASE) {
+                result = dateString.toString().toUpperCase() + result;
+            } else {
+                result = dateString.toString() + result;
+            }
+        }
+
+        SpannableStringBuilder formatted = new SpannableStringBuilder(result);
 
         if (mAmPmStyle != AM_PM_STYLE_NORMAL) {
             int magic1 = result.indexOf(MAGIC1);
             int magic2 = result.indexOf(MAGIC2);
             if (magic1 >= 0 && magic2 > magic1) {
-                SpannableStringBuilder formatted = new SpannableStringBuilder(result);
                 if (mAmPmStyle == AM_PM_STYLE_GONE) {
                     formatted.delete(magic1, magic2+1);
                 } else {
@@ -209,10 +338,26 @@ public class Clock implements DemoMode {
                     formatted.delete(magic2, magic2 + 1);
                     formatted.delete(magic1, magic1 + 1);
                 }
-                return formatted;
             }
         }
+        if (mClockDateDisplay != CLOCK_DATE_DISPLAY_NORMAL) {
+            if (dateString != null) {
+                int dateStringLen = dateString.length();
+                if (mClockDateDisplay == CLOCK_DATE_DISPLAY_GONE) {
+                    formatted.delete(0, dateStringLen);
+                } else {
+                    if (mClockDateDisplay == CLOCK_DATE_DISPLAY_SMALL) {
+                        CharacterStyle style = new RelativeSizeSpan(0.7f);
+                        formatted.setSpan(style, 0, dateStringLen,
+                                          Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+                    }
+                }
+         }
+        }
+        return formatted;
+    }
 
+<<<<<<< HEAD
         return result;
     }
 
@@ -274,6 +419,59 @@ public class Clock implements DemoMode {
 
         updateClock();
     }
+=======
+    protected void updateSettings() {
+        ContentResolver resolver = mContext.getContentResolver();
+
+        mShowClock = Settings.System.getIntForUser(resolver,
+                Settings.System.STATUS_BAR_CLOCK, 1,
+                UserHandle.USER_CURRENT) == 1;
+
+        boolean is24hour = DateFormat.is24HourFormat(mContext);
+        int amPmStyle = Settings.System.getIntForUser(resolver,
+                Settings.System.STATUSBAR_CLOCK_AM_PM_STYLE,
+                AM_PM_STYLE_GONE,
+                UserHandle.USER_CURRENT);
+        mAmPmStyle = is24hour ? AM_PM_STYLE_GONE : amPmStyle;
+        mClockFormatString = "";
+
+        mClockStyle = Settings.System.getIntForUser(resolver,
+                Settings.System.STATUSBAR_CLOCK_STYLE, STYLE_CLOCK_RIGHT,
+                UserHandle.USER_CURRENT);
+        mClockDateDisplay = Settings.System.getIntForUser(resolver,
+                Settings.System.STATUSBAR_CLOCK_DATE_DISPLAY, CLOCK_DATE_DISPLAY_GONE,
+                UserHandle.USER_CURRENT);
+        mClockDateStyle = Settings.System.getIntForUser(resolver,
+                Settings.System.STATUSBAR_CLOCK_DATE_STYLE, CLOCK_DATE_STYLE_REGULAR,
+                UserHandle.USER_CURRENT);
+
+        int defaultColor = getResources().getColor(R.color.status_bar_clock_color);
+        int clockColor = Settings.System.getIntForUser(resolver,
+                Settings.System.STATUSBAR_CLOCK_COLOR, defaultColor,
+                UserHandle.USER_CURRENT);
+        if (clockColor == Integer.MIN_VALUE) {
+            // flag to reset the color
+            clockColor = defaultColor;
+        }
+
+        if (mAttached) {
+            setTextColor(clockColor);
+            updateClockVisibility();
+            updateClock();
+        }
+
+    }
+
+    protected void updateClockVisibility() {
+        if (mClockStyle == STYLE_CLOCK_RIGHT && mShowClock) {
+            setVisibility(View.VISIBLE);
+        } else {
+            setVisibility(View.GONE);
+        }
+    }
+
+    private boolean mDemoMode;
+>>>>>>> lpcm1
 
     @Override
     public void dispatchDemoCommand(String command, Bundle args) {
