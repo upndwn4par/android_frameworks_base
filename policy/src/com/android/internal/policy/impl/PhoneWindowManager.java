@@ -399,6 +399,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     int mCurrentAppOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
     boolean mHasSoftInput = false;
     boolean mTranslucentDecorEnabled = true;
+    int mBackKillTimeout;
 
     int mDeviceHardwareKeys;
 
@@ -416,7 +417,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mVolumeWakeTriggered;
 
     int mPointerLocationMode = 0; // guarded by mLock
-    int mBackKillTimeout;
 
     int mLongPressPoweronTime = DEFAULT_LONG_PRESS_POWERON_TIME;
     // The last window we were told about in focusChanged.
@@ -569,9 +569,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     int mRingHomeBehavior;
 
     Display mDisplay;
-
-    // Nav bar custom dimensions
-    int mShortSizeDp;
 
     int mLandscapeRotation = 0;  // default landscape rotation
     int mSeascapeRotation = 0;   // "other" landscape rotation, 180 degrees from mLandscapeRotation
@@ -797,12 +794,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVBAR_LEFT_IN_LANDSCAPE), false, this,
                     UserHandle.USER_ALL);
-	    resolver.registerContentObserver(Settings.System.getUriFor(
-		    Settings.System.NAVIGATION_BAR_HEIGHT), false, this,
-		    UserHandle.USER_ALL);
-	    resolver.registerContentObserver(Settings.System.getUriFor(
-		    Settings.System.NAVIGATION_BAR_WIDTH), false, this,
-		    UserHandle.USER_ALL);
+	        resolver.registerContentObserver(Settings.System.getUriFor(
+		    	    Settings.System.NAVIGATION_BAR_HEIGHT), false, this,
+		    	    UserHandle.USER_ALL);
+	        resolver.registerContentObserver(Settings.System.getUriFor(
+		    	    Settings.System.NAVIGATION_BAR_WIDTH), false, this,
+		    	    UserHandle.USER_ALL);
             updateSettings();
         }
 
@@ -1155,6 +1152,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     };
 
+    @Override
+    public void showGlobalActions() {
+        mHandler.removeMessages(MSG_DISPATCH_SHOW_GLOBAL_ACTIONS);
+        mHandler.sendEmptyMessage(MSG_DISPATCH_SHOW_GLOBAL_ACTIONS);
+    }
+
     Runnable mBackLongPress = new Runnable() {
         public void run() {
             try {
@@ -1199,12 +1202,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
     };
-
-    @Override
-    public void showGlobalActions() {
-        mHandler.removeMessages(MSG_DISPATCH_SHOW_GLOBAL_ACTIONS);
-        mHandler.sendEmptyMessage(MSG_DISPATCH_SHOW_GLOBAL_ACTIONS);
-    }
 
     void showGlobalActionsInternal() {
         sendCloseSystemWindows(SYSTEM_DIALOG_REASON_GLOBAL_ACTIONS);
