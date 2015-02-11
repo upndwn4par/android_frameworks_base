@@ -3467,6 +3467,11 @@ public final class Settings {
                 = "status_bar_locked_on_secure_keyguard";
 
         /**
+         * @hide
+         */
+        public static final String SHOW_SU_ICON = "show_su_icon";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
