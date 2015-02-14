@@ -400,6 +400,7 @@ public class QSPanel extends ViewGroup {
     }
 
     private void setGridContentVisibility(boolean visible) {
+        mGridContentVisible = visible;
         int newVis = visible ? VISIBLE : INVISIBLE;
         for (int i = 0; i < mRecords.size(); i++) {
             TileRecord tileRecord = mRecords.get(i);
