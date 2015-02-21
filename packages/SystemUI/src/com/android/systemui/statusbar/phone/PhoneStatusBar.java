@@ -418,23 +418,18 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
     };
 
-    class SettingsObserver extends UserContentObserver {
+    class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
         }
 
-        @Override
-        protected void observe() {
-            super.observe();
-
+        void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL), false, this,
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SCREEN_BRIGHTNESS_MODE), false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_CLOCK), false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVBAR_LEFT_IN_LANDSCAPE), false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -447,12 +442,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
 
         @Override
-        protected void unobserve() {
-            super.unobserve();
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.unregisterContentObserver(this);
-        }
-
         public void onChange(boolean selfChange, Uri uri) {
             if (uri.equals(Settings.System.getUriFor(
                     Settings.System.HEADS_UP_SNOOZE_TIME))) {
@@ -489,7 +478,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             update();
         }
 
-        @Override
         public void update() {
             ContentResolver resolver = mContext.getContentResolver();
             int mode = Settings.System.getIntForUser(mContext.getContentResolver(),
@@ -502,33 +490,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     resolver, Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL, 0,
                     UserHandle.USER_CURRENT) == 1;
 
-            final int oldClockLocation = mClockLocation;
-            final View oldClockView = mClockView;
-            mClockLocation = Settings.System.getIntForUser(
-                    resolver, Settings.System.STATUS_BAR_CLOCK, Clock.STYLE_CLOCK_RIGHT,
-                    UserHandle.USER_CURRENT);
-            updateClockView();
-
-            // check to see if we need to adjust alpha/visibility
-            // this fixes the bug where if User A has left and User B has center and you switch
-            // from A to B then go into the settings and adjust the clock to left - without this
-            // code block it will adjust the space but be transparent
-            if (oldClockView != mClockView) {
-                // if the new clock position is outside the system icon area, make the alpha
-                // and visibility match the system icon area alpha/visibility
-                if (isClockLocationOutsideSystemIconArea(mClockLocation)) {
-                    mClockView.setAlpha(mSystemIconArea.getAlpha());
-                    mClockView.setVisibility(mSystemIconArea.getVisibility());
-                }
-
-                // if the old clock position it outside the system icon area, make it opaque
-                // and set visibility to gone
-                if (isClockLocationOutsideSystemIconArea(oldClockLocation)) {
-                    oldClockView.setAlpha(1f);
-                    oldClockView.setVisibility(View.GONE);
-                }
-            }
-
             if (mNavigationBarView != null) {
                 boolean navLeftInLandscape = Settings.System.getIntForUser(resolver,
                         Settings.System.NAVBAR_LEFT_IN_LANDSCAPE, 0, UserHandle.USER_CURRENT) == 1;
@@ -537,62 +498,21 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
     }
 
-    void updateClockView() {
-        mClockView.setVisibility(View.GONE);
-
-        switch (mClockLocation) {
-            default:
-            case Clock.STYLE_HIDE_CLOCK:
-                mClockView = (TextView) mStatusBarView.findViewById(R.id.clock);
-                // Don't set visibility here...
-                break;
-            case Clock.STYLE_CLOCK_RIGHT:
-                mClockView = (TextView) mStatusBarView.findViewById(R.id.clock);
-                mClockView.setVisibility(View.VISIBLE);
-                break;
-            case Clock.STYLE_CLOCK_CENTER:
-                mClockView = (TextView) mStatusBarView.findViewById(R.id.center_clock);
-                mClockView.setVisibility(View.VISIBLE);
-                break;
-            case Clock.STYLE_CLOCK_LEFT:
-                mClockView = (TextView) mStatusBarView.findViewById(R.id.left_clock);
-                mClockView.setVisibility(View.VISIBLE);
-                break;
-        }
-
-        setClockAndDateStatus();
-        mClockController.updateClockView(mClockView);
-    }
-
-    public void setClockAndDateStatus() {
-        if (mNotificationIcons != null) {
-            mNotificationIcons.setClockAndDateStatus(mClockLocation);
-        }
-    }
-
-    private static boolean isClockLocationOutsideSystemIconArea(int clockLocation) {
-        return clockLocation == Clock.STYLE_CLOCK_CENTER
-                || clockLocation == Clock.STYLE_CLOCK_LEFT;
-    }
-
     class DevForceNavbarObserver extends ContentObserver {
         DevForceNavbarObserver(Handler handler) {
             super(handler);
         }
 
-        @Override
-        protected void observe() {
-            super.observe();
+        void observe() {
             ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.Secure.getUriFor(
-                    Settings.Secure.DEV_FORCE_SHOW_NAVBAR), false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.DEV_FORCE_SHOW_NAVBAR), false, this);
         }
 
         @Override
-        public void update() {
-            boolean visible = Settings.Secure.getIntForUser(mContext.getContentResolver(),
-                    Settings.Secure.DEV_FORCE_SHOW_NAVBAR, 0, UserHandle.USER_CURRENT) == 1;
-
+        public void onChange(boolean selfChange) {
+            boolean visible = Settings.System.getIntForUser(mContext.getContentResolver(),
+                    Settings.System.DEV_FORCE_SHOW_NAVBAR, 0, UserHandle.USER_CURRENT) == 1;
             if (visible) {
                 forceAddNavigationBar();
             } else {
