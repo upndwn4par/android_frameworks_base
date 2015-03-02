@@ -24,6 +24,7 @@ import android.animation.ValueAnimator;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.database.ContentObserver;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -181,9 +182,8 @@ public class NotificationPanelView extends PanelView implements
     private LockPatternUtils mLockPatternUtils;
     private SettingsObserver mSettingsObserver;
 
-    private boolean mOneFingerQuickSettingsIntercept;
+    private int mOneFingerQuickSettingsIntercept;
     private boolean mStatusBarLockedOnSecureKeyguard;
-
     private boolean mDoubleTapToSleepEnabled;
     private int mStatusBarHeaderHeight;
     private GestureDetector mDoubleTapGesture;
@@ -1915,38 +1915,34 @@ public class NotificationPanelView extends PanelView implements
             super(handler);
         }
 
-        @Override
-        protected void observe() {
-            super.observe();
+	@Override
+	protected void observe() {
+	    super.observe();
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QS_QUICK_PULLDOWN), false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.DOUBLE_TAP_SLEEP_GESTURE), false, this);
+                    Settings.System.DOUBLE_TAP_SLEEP_GESTURE), false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_LOCKED_ON_SECURE_KEYGUARD), false, this);
             update();
         }
 
         @Override
-        protected void unobserve() {
-            super.unobserve();
-            mContext.getContentResolver().unregisterContentObserver(this);
+		protected void unobserve() {
+		    super.unobserve();
+		    mContext.getContentResolver().unregisterContentObserver(this);
         }
 
         @Override
         public void update() {
             ContentResolver resolver = mContext.getContentResolver();
-            mOneFingerQuickSettingsIntercept = Settings.System.getIntForUser(resolver,
-                    Settings.System.QS_QUICK_PULLDOWN, 0, UserHandle.USER_CURRENT);
-            mDoubleTapToSleepEnabled = Settings.System.getIntForUser(resolver,
-                    Settings.System.DOUBLE_TAP_SLEEP_GESTURE, 1, UserHandle.USER_CURRENT) == 1;
-            mOneFingerQuickSettingsIntercept = Settings.System.getInt(resolver,
-		    Settings.System.STATUS_BAR_QUICK_QS_PULLDOWN, 1) == 1;
-            mDoubleTapToSleepEnabled = Settings.System.getInt(resolver,
-		    Settings.System.DOUBLE_TAP_SLEEP_GESTURE, 1) == 1;
-            mStatusBarLockedOnSecureKeyguard = Settings.System.getInt(resolver,
-		    Settings.System.STATUS_BAR_LOCKED_ON_SECURE_KEYGUARD, 1) == 1;
+		    mOneFingerQuickSettingsIntercept = Settings.System.getIntForUser(resolver,
+				    Settings.System.QS_QUICK_PULLDOWN, 0, UserHandle.USER_CURRENT);
+			mDoubleTapToSleepEnabled = Settings.System.getIntForUser(resolver,
+				    Settings.System.DOUBLE_TAP_SLEEP_GESTURE, 1, UserHandle.USER_CURRENT) == 1;
+            mStatusBarLockedOnSecureKeyguard = Settings.System.getInt(
+                    resolver, Settings.System.STATUS_BAR_LOCKED_ON_SECURE_KEYGUARD, 1) == 1;
         }
     }
 }
