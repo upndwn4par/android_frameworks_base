@@ -31,6 +31,7 @@
         android:id="@+id/recents_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+	android:layout_marginBottom="48dp"
         android:focusable="true" />
 
     <!-- Empty View -->
@@ -50,7 +51,8 @@
         android:id="@+id/clear_recents"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_gravity="top|right"
+        android:layout_gravity="center"
+	android:layout_marginBottom="48dp"
         android:src="@drawable/ic_dismiss_all"
         android:scaleType="centerInside"
         android:background="@drawable/recents_button_bg"
