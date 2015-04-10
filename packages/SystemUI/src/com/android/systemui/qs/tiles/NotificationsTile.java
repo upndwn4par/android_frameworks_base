@@ -34,6 +34,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.provider.Settings;
 import android.provider.Settings.Global;
 import android.util.Log;
 import android.view.View;
@@ -87,6 +88,15 @@ public class NotificationsTile extends QSTile<NotificationsTile.NotificationsSta
     @Override
     protected void handleClick() {
         showDetail(true);
+    }
+
+    @Override
+    protected void handleLongClick() {
+    //Use Priority Notifications mode instead?
+    //mAudioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+
+    //No Interuptions mode i.e. true silent mode
+    mZenController.setZen(Global.ZEN_MODE_NO_INTERRUPTIONS);
     }
 
     @Override
